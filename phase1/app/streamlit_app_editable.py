@@ -7,12 +7,20 @@ import pandas as pd
 from utils.ocr import DocumentIntelligenceExtractor
 from utils.openai_extractor import OpenAIExtractor
 from utils.validation import ExtractionValidator
+import logging
+import datetime
 
 # Configuration de la page
 st.set_page_config(
     page_title="Form Extractor ביטוח לאומי",
     page_icon="📄",
     layout="wide"
+)
+
+# Configuration du logging 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
 # Titre et description
@@ -96,6 +104,21 @@ if uploaded_file is not None:
                 # Envoyer uniquement le contenu textuel à OpenAI, pas les métadonnées OCR
                 text_content = "\n".join([span.get("text", "") for span in ocr_result.get("text", [])])
                 structured_result = openai_extractor.extract_structured_data(text_content)
+                
+                # Récupérer le chemin du fichier d'extraction
+                extraction_files = []
+                extraction_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "extractions")
+                if os.path.exists(extraction_dir):
+                    files = os.listdir(extraction_dir)
+                    # Trier par date de modification (le plus récent en premier)
+                    files.sort(key=lambda x: os.path.getmtime(os.path.join(extraction_dir, x)), reverse=True)
+                    extraction_files = [os.path.join(extraction_dir, f) for f in files if f.endswith('.json')]
+                
+                if extraction_files:
+                    # Prendre le fichier le plus récent
+                    latest_file = extraction_files[0]
+                    st.session_state["extraction_file"] = latest_file
+                    logging.info(f"Fichier d'extraction associé: {latest_file}")
                 
                 status.update(label="Analysis completed ✅")
                 
@@ -275,30 +298,56 @@ if uploaded_file is not None:
                             # Ajouter un séparateur entre les sections
                             st.markdown("---")
                         
-                        # Ajouter un bouton pour soumettre les modifications
+                        # Soumettre le formulaire
                         submit_button = st.form_submit_button("Update Data")
                         
                         if submit_button:
-                            # Reconstruire le dictionnaire à partir des éléments édités
-                            updated_result = rebuild_dict(edited_items)
+                            # Convertir la liste de paires clé-valeur en dictionnaire
+                            final_result = rebuild_dict(edited_items)
                             
-                            # Détecter les champs modifiés manuellement
-                            original_result = st.session_state.get("extraction_result", {})
-                            manual_corrections = {}
+                            # Valider les données modifiées
+                            validator.validate_extraction(final_result)
                             
-                            # Utiliser la même méthode pour aplatir les résultats originaux
-                            flat_original = dict(flatten_dict(original_result))
-                            flat_updated = dict(edited_items)
+                            # Exporter les données
+                            if "extraction_result" in st.session_state:
+                                try:
+                                    # Enregistrer les modifications dans le fichier d'extraction d'origine
+                                    if "extraction_file" in st.session_state:
+                                        extraction_file = st.session_state["extraction_file"]
+                                        logging.info(f"Mise à jour du fichier d'extraction: {extraction_file}")
+                                        
+                                        # Lire le fichier existant
+                                        with open(extraction_file, 'r', encoding='utf-8') as f:
+                                            extraction_data = json.load(f)
+                                        
+                                        # Mettre à jour les données
+                                        extraction_data["final_extraction"] = final_result
+                                        extraction_data["has_been_corrected"] = True
+                                        extraction_data["last_update"] = datetime.datetime.now().isoformat()
+                                        
+                                        # Enregistrer le fichier mis à jour
+                                        with open(extraction_file, 'w', encoding='utf-8') as f:
+                                            json.dump(extraction_data, f, ensure_ascii=False, indent=2)
+                                                
+                                        logging.info(f"Fichier d'extraction mis à jour avec succès")
+                                        st.session_state["extraction_updated"] = True
+                                    else:
+                                        logging.warning("Aucun fichier d'extraction trouvé en session")
+                                        st.session_state["extraction_updated"] = False
+                                
+                                except Exception as e:
+                                    logging.error(f"Erreur lors de la mise à jour du fichier d'extraction: {str(e)}")
+                                    import traceback
+                                    logging.error(traceback.format_exc())
+                                    st.session_state["extraction_updated"] = False
+                                
+                                # Mettre à jour les données en session
+                                st.session_state["extraction_result"] = final_result
                             
-                            for key, new_value in flat_updated.items():
-                                if key in flat_original and flat_original[key] != new_value:
-                                    manual_corrections[key] = new_value
-                            
-                            # Mettre à jour l'état de la session
-                            structured_result = updated_result
-                            st.session_state['updated_result'] = updated_result
-                            
-                            st.success("Data updated successfully!")
+                            success_msg = "✅ Data updated successfully!"
+                            if st.session_state.get("extraction_updated", False):
+                                success_msg += " Extraction file updated."
+                            st.success(success_msg)
                     
                     # Bouton de téléchargement en dehors du formulaire
                     json_str = json.dumps(structured_result, ensure_ascii=False, indent=2)

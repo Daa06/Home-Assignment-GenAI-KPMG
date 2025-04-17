@@ -4,6 +4,9 @@ import os
 import sys
 import json
 import logging
+from dotenv import load_dotenv
+import uuid
+from datetime import datetime
 
 # Ajouter le répertoire parent au PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -16,6 +19,18 @@ from config import (
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Charger les variables d'environnement
+load_dotenv()
+
+# Récupérer les credentials Azure OpenAI
+AZURE_OPENAI_KEY = os.getenv('AZURE_OPENAI_KEY')
+AZURE_OPENAI_ENDPOINT = os.getenv('AZURE_OPENAI_ENDPOINT')
+AZURE_OPENAI_DEPLOYMENT_NAME = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
+
+# Créer le dossier d'extraction s'il n'existe pas
+EXTRACTION_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "extractions")
+os.makedirs(EXTRACTION_DIR, exist_ok=True)
 
 class OpenAIExtractor:
     def __init__(self):
@@ -179,7 +194,29 @@ Assure-toi de renvoyer UNIQUEMENT le JSON sans aucun texte supplémentaire.
             if 'confidences' in result:
                 logger.warning("Removing 'confidences' section from final result")
                 del result['confidences']
-                
+            
+            # Sauvegarder le résultat dans un fichier JSON
+            extraction_id = f"extraction_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
+            extraction_file = os.path.join(EXTRACTION_DIR, f"{extraction_id}.json")
+            
+            # Créer le dossier s'il n'existe pas
+            os.makedirs(os.path.dirname(extraction_file), exist_ok=True)
+            
+            # Créer une structure complète pour l'extraction
+            extraction_data = {
+                "id": extraction_id,
+                "timestamp": datetime.now().isoformat(),
+                "original_extraction": result,
+                "final_extraction": result,  # Au début, c'est identique
+                "has_been_corrected": False
+            }
+            
+            # Sauvegarder dans un fichier JSON
+            with open(extraction_file, 'w', encoding='utf-8') as f:
+                json.dump(extraction_data, f, ensure_ascii=False, indent=2)
+            
+            logger.info(f"Résultat d'extraction sauvegardé dans: {extraction_file}")
+            
             return result
             
         except Exception as e:
