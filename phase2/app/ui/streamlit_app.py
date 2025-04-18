@@ -124,6 +124,11 @@ if "message_submitted" not in st.session_state:
     st.session_state.message_submitted = False
     logger.debug("Variable message_submitted initialisée")
 
+# Ajouter un compteur pour générer des clés de formulaire uniques
+if "form_key_counter" not in st.session_state:
+    st.session_state.form_key_counter = 0
+    logger.debug("Variable form_key_counter initialisée")
+
 # Logger l'état initial de la session
 log_session_state()
 
@@ -266,11 +271,13 @@ def process_profile_message(user_message: str) -> None:
         # Réinitialiser le flag de soumission
         st.session_state.message_submitted = False
         
-        # Forcer un rerun Streamlit si nécessaire
-        if st.session_state.current_step != previous_step:
-            logger.debug("État de la session modifié, forçage du rafraîchissement...")
-            st.experimental_rerun()
-            
+        # Logger l'état de la session après traitement
+        logger.debug("État de la session après traitement du message:")
+        log_session_state()
+        
+        # Toujours forcer un rerun après traitement pour actualiser l'interface
+        st.experimental_rerun()
+        
     except Exception as e:
         st.error(f"Error processing message: {str(e)}")
         logger.error(f"Error in process_profile_message: {str(e)}")
@@ -339,6 +346,8 @@ def reset_session() -> None:
     st.session_state.last_message_time = 0
     st.session_state.last_message_content = ""
     st.session_state.message_submitted = False
+    # Réinitialiser le compteur de clé de formulaire
+    st.session_state.form_key_counter = 0
     
     # Ajouter un message d'accueil initial
     st.session_state.conversation_history["messages"] = [{
@@ -383,6 +392,8 @@ def change_mode(new_mode: str) -> None:
     st.session_state.last_message_time = 0
     st.session_state.last_message_content = ""
     st.session_state.message_submitted = False
+    # Réinitialiser le compteur de clé de formulaire
+    st.session_state.form_key_counter = 0
     logger.debug("Variables de contrôle des messages dupliqués réinitialisées")
     log_session_state()
 
@@ -443,9 +454,10 @@ input_container = st.container()
 
 # Champ de saisie pour l'utilisateur
 with input_container:
-    # Utiliser un formulaire pour éviter les soumissions automatiques
-    with st.form(key="message_form"):
-        user_input = st.text_input("Your message:", key="user_input")
+    # Utiliser un formulaire avec une clé dynamique pour forcer le rechargement du formulaire
+    form_key = f"message_form_{st.session_state.form_key_counter}"
+    with st.form(key=form_key):
+        user_input = st.text_input("Your message:", key=f"user_input_{st.session_state.form_key_counter}")
         submit_button = st.form_submit_button("Send")
         
         # Traiter l'entrée de l'utilisateur uniquement lorsque le formulaire est soumis
@@ -466,6 +478,10 @@ with input_container:
             st.session_state.last_message_time = current_time
             st.session_state.last_message_content = user_input
             
+            # Incrémenter le compteur de clé de formulaire pour le prochain cycle
+            st.session_state.form_key_counter += 1
+            logger.debug(f"Compteur de formulaire incrémenté: {st.session_state.form_key_counter}")
+            
             # Traiter le message
             if st.session_state.mode == "profile":
                 process_profile_message(user_input)
@@ -475,6 +491,12 @@ with input_container:
             # Logger l'état de la session après traitement
             logger.debug("État de la session après traitement du message:")
             log_session_state()
+
+            # Réinitialiser le flag de soumission mais ne pas changer le compteur ici
+            st.session_state.message_submitted = False
+            
+            # Forcer un rerun Streamlit pour rafraîchir l'interface
+            st.experimental_rerun()
 
 # CSS personnalisé
 st.markdown("""
