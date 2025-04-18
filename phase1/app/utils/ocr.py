@@ -9,11 +9,11 @@ import base64
 import base64
 from typing import Dict, Any, Optional
 
-# Ajouter le répertoire parent au PYTHONPATH
+# Add parent directory to PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT, AZURE_DOCUMENT_INTELLIGENCE_KEY
 
-# Configuration du logging
+# Logging configuration
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -30,42 +30,42 @@ class DocumentIntelligenceExtractor:
 
     def _extract_bounding_box(self, polygon):
         """
-        Extraire la boîte englobante à partir d'un polygone retourné par l'API.
-        Gère les deux formats possibles de polygones (liste de points ou liste de coordonnées).
+        Extract the bounding box from a polygon returned by the API.
+        Handles both possible polygon formats (list of points or list of coordinates).
         
         Args:
-            polygon: Liste de points ou de coordonnées représentant le polygone
+            polygon: List of points or coordinates representing the polygon
             
         Returns:
-            Dict contenant x, y, width et height de la boîte englobante
+            Dict containing x, y, width and height of the bounding box
         """
         try:
             if not polygon:
                 return {"x": 0, "y": 0, "width": 100, "height": 20}
                 
-            # Si polygon est une liste d'objets Point avec attributs x et y
+            # If polygon is a list of Point objects with x and y attributes
             if hasattr(polygon[0], 'x') and hasattr(polygon[0], 'y'):
-                # Format avec des objets Points
+                # Format with Point objects
                 x_coordinates = [p.x for p in polygon]
                 y_coordinates = [p.y for p in polygon]
-            # Si polygon contient directement des nombres (liste plate [x1, y1, x2, y2, ...])
+            # If polygon directly contains numbers (flat list [x1, y1, x2, y2, ...])
             elif isinstance(polygon[0], (int, float)):
                 if len(polygon) % 2 == 0:
                     x_coordinates = [polygon[i] for i in range(0, len(polygon), 2)]
                     y_coordinates = [polygon[i] for i in range(1, len(polygon), 2)]
                 else:
-                    # Format inconnu, on utilise des valeurs par défaut
+                    # Unknown format, use default values
                     return {"x": 0, "y": 0, "width": 100, "height": 20}
-            # Si polygon est une liste de listes/tuples de coordonnées [[x1,y1], [x2,y2], ...]
+            # If polygon is a list of lists/tuples of coordinates [[x1,y1], [x2,y2], ...]
             elif isinstance(polygon[0], (list, tuple)) and len(polygon[0]) == 2:
                 x_coordinates = [p[0] for p in polygon]
                 y_coordinates = [p[1] for p in polygon]
             else:
-                # Format inconnu, on utilise des valeurs par défaut
-                logger.warning(f"Format de polygone non reconnu: {type(polygon[0])}")
+                # Unknown format, use default values
+                logger.warning(f"Unrecognized polygon format: {type(polygon[0])}")
                 return {"x": 0, "y": 0, "width": 100, "height": 20}
                     
-            # Calculer les dimensions de la boîte englobante
+            # Calculate bounding box dimensions
             min_x = min(x_coordinates)
             min_y = min(y_coordinates)
             max_x = max(x_coordinates)
@@ -78,8 +78,8 @@ class DocumentIntelligenceExtractor:
                 "height": max_y - min_y
             }
         except Exception as e:
-            logger.warning(f"Erreur lors de l'extraction de la boîte englobante: {str(e)}")
-            # En cas d'erreur, retourner une boîte par défaut
+            logger.warning(f"Error extracting bounding box: {str(e)}")
+            # In case of error, return a default box
             return {"x": 0, "y": 0, "width": 100, "height": 20}
 
     def extract_text(self, file_path: str) -> Dict[str, Any]:
@@ -97,15 +97,23 @@ class DocumentIntelligenceExtractor:
                 document_bytes = f.read()
                 base64_encoded = base64.b64encode(document_bytes).decode()
                 
-            poller = self.client.begin_analyze_document("prebuilt-layout", {"base64Source": base64_encoded})
+            # Include parameters in the request object
+            request_data = {
+                "base64Source": base64_encoded,
+                "preprocess": True,
+                "language": "he,en",  # Support for Hebrew and English
+                "pages": "1"  # Process only the first page
+            }
+            
+            poller = self.client.begin_analyze_document("prebuilt-layout", request_data)
             result = poller.result()
 
-            # Extraire le texte avec les scores de confiance
+            # Extract text with confidence scores
             text_with_confidence = []
             for page in result.pages:
                 for line in page.lines:
                     try:
-                        # Vérifier si polygon est une liste de points ou de coordonnées directes
+                        # Check if polygon is a list of points or direct coordinates
                         bbox = self._extract_bounding_box(line.polygon)
                         text_with_confidence.append({
                             "text": line.content,
@@ -114,9 +122,9 @@ class DocumentIntelligenceExtractor:
                             "page": page.page_number
                         })
                     except Exception as e:
-                        logger.warning(f"Erreur lors du traitement d'une ligne: {str(e)}")
+                        logger.warning(f"Error processing a line: {str(e)}")
 
-            # Extraire les tables
+            # Extract tables
             tables = []
             for table in result.tables:
                 table_data = []
@@ -129,7 +137,7 @@ class DocumentIntelligenceExtractor:
                     })
                 tables.append(table_data)
 
-            # Extraire les informations de mise en page
+            # Extract layout information
             layout = []
             for page in result.pages:
                 page_layout = {
@@ -140,7 +148,7 @@ class DocumentIntelligenceExtractor:
                     "spans": []
                 }
                 
-                # Ajouter les spans avec leurs positions
+                # Add spans with their positions
                 for word in page.words:
                     try:
                         bbox = self._extract_bounding_box(word.polygon)
@@ -150,11 +158,11 @@ class DocumentIntelligenceExtractor:
                             "bounding_box": bbox
                         })
                     except Exception as e:
-                        logger.warning(f"Erreur lors du traitement d'un mot: {str(e)}")
+                        logger.warning(f"Error processing a word: {str(e)}")
                     
                 layout.append(page_layout)
 
-            # Calculer la confiance moyenne
+            # Calculate average confidence
             confidences = [span["confidence"] for page in layout for span in page["spans"] if span["confidence"] is not None]
             average_confidence = sum(confidences) / len(confidences) if confidences else 0
 

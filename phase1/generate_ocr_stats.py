@@ -2,6 +2,41 @@
 import os
 import sys
 import argparse
+import importlib
+import subprocess
+import pkg_resources
+
+def check_and_install_dependencies():
+    """Check and install required dependencies"""
+    required_packages = {
+        'pandas': 'pandas>=1.3.0',
+        'matplotlib': 'matplotlib>=3.5.0',
+        'jinja2': 'jinja2>=3.0.0',
+        'python-dotenv': 'python-dotenv>=0.19.0'
+    }
+    
+    missing_packages = []
+    
+    for package, requirement in required_packages.items():
+        try:
+            importlib.import_module(package)
+            print(f"✅ {package} is already installed")
+        except ImportError:
+            missing_packages.append(requirement)
+    
+    if missing_packages:
+        print(f"Installing missing dependencies: {', '.join(missing_packages)}")
+        try:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install'] + missing_packages)
+            print("All dependencies installed successfully")
+        except subprocess.CalledProcessError as e:
+            print(f"Error installing dependencies: {e}")
+            sys.exit(1)
+
+# Verify and install dependencies before imports that may fail
+check_and_install_dependencies()
+
+# Now import other modules that may require installation
 import json
 import webbrowser
 import re
@@ -22,36 +57,38 @@ def main():
                       help="Open the report in browser after generation")
     args = parser.parse_args()
     
-    # Vérifier que le dossier d'extractions existe
+    print("✅ All dependencies verified and installed")
+    
+    # Check if the extractions directory exists
     extraction_dir = args.extractions
     if not os.path.isabs(extraction_dir):
-        # Obtenir le chemin absolu
+        # Get the absolute path
         app_dir = os.path.dirname(os.path.abspath(__file__))
         extraction_dir = os.path.join(app_dir, extraction_dir)
     
-    print(f"Dossier d'extractions: {extraction_dir}")
+    print(f"Extractions directory: {extraction_dir}")
     
     if not os.path.exists(extraction_dir):
-        print(f"Le dossier d'extractions n'existe pas: {extraction_dir}")
+        print(f"Extractions directory does not exist: {extraction_dir}")
         sys.exit(1)
     
-    # Récupérer tous les fichiers JSON
+    # Get all JSON files
     extraction_files = [os.path.join(extraction_dir, f) for f in os.listdir(extraction_dir) 
                        if f.endswith('.json')]
     
     if not extraction_files:
-        print(f"Aucun fichier d'extraction trouvé dans {extraction_dir}")
+        print(f"No extraction files found in {extraction_dir}")
         sys.exit(1)
     
-    print(f"Nombre de fichiers d'extraction trouvés: {len(extraction_files)}")
+    print(f"Number of extraction files found: {len(extraction_files)}")
     
-    # Analyser les extractions
+    # Analyze the extractions
     stats = analyze_extractions(extraction_files)
     
-    # Générer le rapport HTML
+    # Generate the HTML report
     html_report = generate_html_report(stats)
     
-    # Écrire le rapport dans un fichier
+    # Write the report to a file
     output_path = args.output
     if not os.path.isabs(output_path):
         output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), output_path)
@@ -59,45 +96,45 @@ def main():
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_report)
     
-    print(f"Rapport généré: {output_path}")
+    print(f"Report generated: {output_path}")
     
-    # Ouvrir le rapport dans le navigateur si demandé
+    # Open the report in browser if requested
     if args.open:
         try:
             webbrowser.open('file://' + os.path.abspath(output_path))
         except Exception as e:
-            print(f"Impossible d'ouvrir le navigateur: {e}")
+            print(f"Unable to open browser: {e}")
 
 def analyze_extractions(extraction_files):
-    """Analyse les fichiers d'extraction pour générer des statistiques"""
-    # Liste des champs d'intérêt spécifiés avec leur format attendu
+    """Analyzes extraction files to generate statistics"""
+    # List of fields of interest specified with their expected format
     important_fields = {
         'firstName': {'label': 'First Name', 'format': r'^.+$'},
         'lastName': {'label': 'Last Name', 'format': r'^.+$'},
         'idNumber': {'label': 'ID Number (9-digit)', 'format': r'^\d{9}$'},
         'gender': {'label': 'Gender', 'format': r'^(Male|Female|זכר|נקבה)$'},
-        'hmoName': {'label': 'HMO Name', 'format': r'^(מכבי|מאוחדת|כללית)$'},
-        'hmoCardNumber': {'label': 'HMO Card Number (9-digit)', 'format': r'^\d{9}$'},
-        'insuranceTier': {'label': 'Insurance Tier', 'format': r'^(זהב|כסף|ארד)$'}
+        'dateOfInjury': {'label': 'Date of Injury', 'format': r'^.+$'},
+        'postalCode': {'label': 'Postal Code', 'format': r'^\d{5,7}$'},
+        'accidentLocation': {'label': 'Accident Location', 'format': r'^.+$'}
     }
     
-    # Liste des champs additionnels à surveiller
+    # List of additional fields to monitor
     additional_fields = {
         'dateOfBirth.day': {'format': r'^(0?[1-9]|[12][0-9]|3[01])$'},
         'dateOfBirth.month': {'format': r'^(0?[1-9]|1[0-2])$'},
         'dateOfBirth.year': {'format': r'^(19|20)\d{2}$'}
     }
     
-    # Structure pour stocker les statistiques
+    # Structure to store statistics
     stats = {
         "documents": [],
         "field_stats": {},
         "important_fields": list(important_fields.keys()) + ['age'],
-        "unique_documents": set(),  # Ensemble pour suivre les documents uniques
-        "document_fingerprints": {}  # Dictionnaire pour stocker les empreintes des documents
+        "unique_documents": set(),  # Set to track unique documents
+        "document_fingerprints": {}  # Dictionary to store document fingerprints
     }
     
-    # Initialiser les statistiques pour tous les champs importants
+    # Initialize statistics for all important fields
     for field in important_fields.keys():
         stats["field_stats"][field] = {
             "total": 0,
@@ -111,7 +148,7 @@ def analyze_extractions(extraction_files):
             "correction_worsened": 0
         }
     
-    # Initialiser aussi pour l'âge calculé
+    # Initialize also for calculated age
     stats["field_stats"]["age"] = {
         "total": 0,
         "empty": 0,
@@ -124,10 +161,10 @@ def analyze_extractions(extraction_files):
         "correction_worsened": 0
     }
     
-    # Organisation des fichiers par document réel (pas seulement par ID de fichier)
+    # Organization of files by real document (not just by file ID)
     document_files = {}
     
-    # Lire tous les fichiers d'extraction
+    # Read all extraction files
     all_extractions = []
     for file_path in extraction_files:
         try:
@@ -136,63 +173,63 @@ def analyze_extractions(extraction_files):
                 extraction_data["_file_path"] = file_path
                 all_extractions.append(extraction_data)
         except Exception as e:
-            print(f"Erreur lors de la lecture du fichier {file_path}: {str(e)}")
+            print(f"Error reading file {file_path}: {str(e)}")
     
-    # Trier les extractions par timestamp (le plus récent en premier)
+    # Sort extractions by timestamp (most recent first)
     all_extractions.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
     
-    # Fonction pour créer une empreinte du document basée sur les données originales
+    # Function to create a document fingerprint based on original data
     def get_document_fingerprint(extraction):
         original = extraction.get("original_extraction", {})
-        # Utiliser une combinaison de champs pour identifier un document unique
+        # Use a combination of fields to identify a unique document
         keys = ['firstName', 'lastName', 'dateOfBirth', 'accidentDescription']
         values = []
         for key in keys:
             if key in original:
                 if isinstance(original[key], dict):
-                    # Pour les structures imbriquées comme dateOfBirth
+                    # For nested structures like dateOfBirth
                     nested_values = [str(v) for v in original[key].values() if v]
                     values.append("_".join(nested_values))
                 else:
                     values.append(str(original[key]))
         
-        # Créer une empreinte du document
+        # Create a document fingerprint
         fingerprint = "_".join(values)
         return fingerprint
     
-    # Regrouper les extractions par empreinte de document (document réel)
+    # Group extractions by document fingerprint (real document)
     for extraction in all_extractions:
         fingerprint = get_document_fingerprint(extraction)
         if fingerprint not in document_files:
             document_files[fingerprint] = []
         document_files[fingerprint].append(extraction)
     
-    # Traiter chaque document unique
+    # Process each unique document
     for fingerprint, versions in document_files.items():
         try:
-            # Utiliser la version la plus récente du document
-            extraction_data = versions[0]  # Déjà trié par date (le plus récent en premier)
+            # Use the most recent version of the document
+            extraction_data = versions[0]  # Already sorted by date (most recent first)
             file_path = extraction_data["_file_path"]
             
-            # Ajouter l'empreinte à l'ensemble des documents uniques
+            # Add the fingerprint to the set of unique documents
             stats["unique_documents"].add(fingerprint)
             
-            # Utiliser un ID plus stable basé sur l'empreinte
+            # Use a more stable ID based on the fingerprint
             doc_id = f"doc_{len(stats['unique_documents'])}"
             has_been_corrected = extraction_data.get("has_been_corrected", False)
             
-            # Pour le débogage
+            # For debugging
             stats["document_fingerprints"][doc_id] = {
                 "fingerprint": fingerprint,
                 "versions": len(versions),
                 "files": [os.path.basename(v["_file_path"]) for v in versions]
             }
             
-            # Récupérer les extractions originale et finale
+            # Get original and final extractions
             original_extraction = extraction_data.get("original_extraction", {})
             final_extraction = extraction_data.get("final_extraction", original_extraction)
             
-            # Créer une entrée pour ce document
+            # Create an entry for this document
             doc_entry = {
                 "id": doc_id,
                 "file_id": extraction_data.get("id", os.path.basename(file_path)),
@@ -202,14 +239,14 @@ def analyze_extractions(extraction_files):
                 "field_results": {}
             }
             
-            # Ajouter des champs manquants qui devraient être présents
+            # Add missing fields that should be present
             for field in important_fields:
                 if field not in original_extraction:
                     original_extraction[field] = ""
                 if field not in final_extraction:
                     final_extraction[field] = ""
             
-            # Calculer l'âge une seule fois pour ce document
+            # Calculate age once for this document
             age_value = ""
             age_valid = False
             try:
@@ -218,34 +255,34 @@ def analyze_extractions(extraction_files):
                     dob_month = int(original_extraction["dateOfBirth"]["month"])
                     dob_year = int(original_extraction["dateOfBirth"]["year"])
                     
-                    # Créer un objet date pour la date de naissance
+                    # Create a date object for the date of birth
                     dob = datetime(dob_year, dob_month, dob_day)
                     
-                    # Calculer l'âge en années (sans décimales)
+                    # Calculate age in years (without decimals)
                     now = datetime.now()
                     age = now.year - dob.year - ((now.month, now.day) < (dob.month, dob.day))
                     
-                    # Vérifier si l'âge est valide (entre 0 et 120)
+                    # Check if age is valid (between 0 and 120)
                     if 0 <= age <= 120:
                         age_value = age
                         age_valid = True
             except Exception as e:
-                print(f"Erreur lors du calcul de l'âge: {str(e)}")
+                print(f"Error calculating age: {str(e)}")
             
-            # Aplatir les dictionnaires pour faciliter l'analyse
+            # Flatten dictionaries for easier analysis
             flat_original = flatten_dict(original_extraction)
             flat_final = flatten_dict(final_extraction)
             
-            # Traiter d'abord les champs importants
+            # Process important fields first
             for field, field_info in important_fields.items():
                 orig_value = flat_original.get(field, "")
                 final_value = flat_final.get(field, orig_value)
                 
-                # Vérifier le format original et final
+                # Check original and final format
                 orig_format_status = check_format(field, orig_value, field_info['format'])
                 final_format_status = check_format(field, final_value, field_info['format'])
                 
-                # Déterminer si la correction a amélioré ou empiré le format
+                # Determine if correction improved or worsened the format
                 was_corrected = orig_value != final_value
                 correction_improved = was_corrected and orig_format_status != "valid" and final_format_status == "valid"
                 correction_worsened = was_corrected and orig_format_status == "valid" and final_format_status != "valid"
@@ -262,10 +299,10 @@ def analyze_extractions(extraction_files):
                 
                 doc_entry["field_results"][field] = field_result
                 
-                # Mettre à jour les statistiques globales pour ce champ
+                # Update global statistics for this field
                 stats["field_stats"][field]["total"] += 1
                 
-                # Statut du format final
+                # Final format status
                 if final_format_status == "empty":
                     stats["field_stats"][field]["empty"] += 1
                 elif final_format_status == "valid":
@@ -273,13 +310,13 @@ def analyze_extractions(extraction_files):
                 else:
                     stats["field_stats"][field]["invalid"] += 1
                 
-                # Statut du format original
+                # Original format status
                 if orig_format_status == "valid":
                     stats["field_stats"][field]["original_valid"] += 1
                 elif orig_format_status != "empty":
                     stats["field_stats"][field]["original_invalid"] += 1
                 
-                # Si corrigé
+                # If corrected
                 if was_corrected:
                     stats["field_stats"][field]["corrected"] += 1
                     if correction_improved:
@@ -287,7 +324,7 @@ def analyze_extractions(extraction_files):
                     elif correction_worsened:
                         stats["field_stats"][field]["correction_worsened"] += 1
             
-            # Traiter l'âge séparément (car calculé)
+            # Process age separately (since calculated)
             if age_valid:
                 format_status = "valid"
             elif age_value == "":
@@ -297,7 +334,7 @@ def analyze_extractions(extraction_files):
             
             doc_entry["field_results"]["age"] = {
                 "original_value": age_value,
-                "final_value": age_value,  # L'âge reste le même
+                "final_value": age_value,  # Age remains the same
                 "original_format": format_status,
                 "final_format": format_status,
                 "was_corrected": False,
@@ -305,7 +342,7 @@ def analyze_extractions(extraction_files):
                 "correction_worsened": False
             }
             
-            # Mettre à jour les statistiques pour l'âge
+            # Update statistics for age
             stats["field_stats"]["age"]["total"] += 1
             stats["field_stats"]["age"][format_status] += 1
             if format_status == "valid":
@@ -313,23 +350,23 @@ def analyze_extractions(extraction_files):
             elif format_status != "empty":
                 stats["field_stats"]["age"]["original_invalid"] += 1
             
-            # Ajouter l'entrée de ce document
+            # Add entry for this document
             stats["documents"].append(doc_entry)
             
         except Exception as e:
-            print(f"Erreur lors de l'analyse du document (fingerprint: {fingerprint}): {str(e)}")
+            print(f"Error analyzing document (fingerprint: {fingerprint}): {str(e)}")
             import traceback
             traceback.print_exc()
     
-    # Ajouter le nombre de documents uniques
+    # Add unique document count
     stats["unique_document_count"] = len(stats["unique_documents"])
-    # Supprimer l'ensemble car il n'est pas sérialisable en JSON
+    # Remove set as it's not serializable in JSON
     del stats["unique_documents"]
     
     return stats
 
 def check_format(field, value, format_pattern):
-    """Vérifie si la valeur respecte le format attendu pour le champ"""
+    """Checks if the value respects the expected format for the field"""
     if not value or str(value).strip() == "":
         return "empty"
     
@@ -342,7 +379,7 @@ def check_format(field, value, format_pattern):
         return "invalid"
 
 def flatten_dict(d, parent_key=''):
-    """Aplatit un dictionnaire imbriqué"""
+    """Flattens a nested dictionary"""
     items = {}
     for k, v in d.items():
         new_key = f"{parent_key}.{k}" if parent_key else k
@@ -353,7 +390,7 @@ def flatten_dict(d, parent_key=''):
     return items
 
 def generate_reliability_scores(stats):
-    """Génère des scores de fiabilité pour chaque champ"""
+    """Generates reliability scores for each field"""
     reliability_scores = {}
     
     for field, field_stats in stats["field_stats"].items():
@@ -362,12 +399,12 @@ def generate_reliability_scores(stats):
             reliability_scores[field] = 0
             continue
         
-        # Score basé sur la validité finale et l'amélioration par correction
+        # Score based on final validity and improvement through correction
         valid_rate = field_stats["valid"] / total if total > 0 else 0
         improvement_rate = field_stats["correction_improved"] / total if total > 0 else 0
         worsening_rate = field_stats["correction_worsened"] / total if total > 0 else 0
         
-        # Score de fiabilité: validité finale + améliorations - détériorations
+        # Reliability score: final validity + improvements - deteriorations
         reliability = valid_rate + (improvement_rate * 0.1) - (worsening_rate * 0.2)
         reliability_scores[field] = round(max(0, min(100, reliability * 100)), 1)
     
@@ -384,9 +421,9 @@ def generate_html_report(stats):
         'idNumber': 'ID Number (9-digit)',
         'gender': 'Gender',
         'age': 'Age (0-120)',
-        'hmoName': 'HMO Name (מכבי/מאוחדת/כללית)',
-        'hmoCardNumber': 'HMO Card Number (9-digit)',
-        'insuranceTier': 'Insurance Tier (זהב/כסף/ארד)'
+        'dateOfInjury': 'Date of Injury',
+        'postalCode': 'Postal Code',
+        'accidentLocation': 'Accident Location'
     }
     
     # Utiliser les champs importants définis
@@ -706,13 +743,13 @@ def generate_html_report(stats):
     </html>
     """
     
-    # Calculer la fiabilité globale (moyenne des fiabilités)
+    # Calculate overall reliability (average of reliabilities)
     overall_reliability = round(sum(filtered_scores.values()) / len(filtered_scores) if filtered_scores else 0, 1)
     
-    # Obtenir le nombre de documents uniques si disponible
+    # Get unique document count if available
     unique_doc_count = stats.get("unique_document_count", len(stats["documents"]))
     
-    # Générer le HTML
+    # Generate HTML
     template = Template(html_template)
     html = template.render(
         timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

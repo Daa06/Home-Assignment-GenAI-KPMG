@@ -127,13 +127,11 @@ if uploaded_file is not None:
                     st.session_state["extraction_result"] = structured_result
                 
                 with col2:
-                    st.subheader("Structured Data (Editable)")
+                    st.subheader("📝 Form Information")
+                    st.info("If you notice any errors in the extracted data, please correct them and click 'Update Data' to save your changes.")
                     
                     # Ajouter une section de débogage pour identifier la source du problème
                     with st.expander("Debug Information (Technical)"):
-                        st.markdown("### OpenAI Extraction Result (Raw)")
-                        st.json(structured_result)
-                        
                         st.markdown("### Flattened Structure")
                         flat_items = flatten_dict(structured_result)
                         flat_dict = dict(flat_items)
@@ -551,12 +549,4 @@ else:
     - **Structured Data Extraction**: Convert raw text into structured data
     - **Data Validation**: Verify completeness and accuracy of extracted data
     - **Manual Editing**: Correct any errors in the extracted data
-    
-    ## Supported Fields
-    
-    - Personal information (name, ID, gender)
-    - Contact information
-    - Injury and accident details
-    - Medical information
-    - Form metadata
     """) 

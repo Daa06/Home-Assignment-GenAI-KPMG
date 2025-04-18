@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# Obtenir le chemin du script
+# Get the script path
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 EXTRACTIONS_DIR="$SCRIPT_DIR/extractions"
 REPORT_FILE="$SCRIPT_DIR/ocr_reliability_report.html"
 
-# Activer l'environnement virtuel si nécessaire
+# Activate virtual environment if needed
 # source venv/bin/activate
 
-echo "Génération du rapport de statistiques OCR..."
-echo "Dossier d'extractions: $EXTRACTIONS_DIR"
-echo "Rapport de sortie: $REPORT_FILE"
+echo "Generating OCR statistics report..."
+echo "Extractions directory: $EXTRACTIONS_DIR"
+echo "Output report: $REPORT_FILE"
 
-# Exécuter le script de génération de statistiques
+# Run the statistics generation script
 python3 "$SCRIPT_DIR/generate_ocr_stats.py" --extractions "$EXTRACTIONS_DIR" --output "$REPORT_FILE" --open
 
-# Afficher un message
-echo "Terminé!" 
+# Display a message
+echo "Completed!" 
