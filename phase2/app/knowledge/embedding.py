@@ -2,41 +2,78 @@ import os
 import numpy as np
 import json
 from typing import List, Dict, Any, Optional, Tuple
-import faiss
-from openai import AzureOpenAI
 from ..core.config import settings
+from ..llm.client import create_openai_client
 from loguru import logger
+
+# Import conditionnel de FAISS
+try:
+    import faiss
+    FAISS_AVAILABLE = True
+    logger.info("FAISS est disponible")
+except ImportError:
+    FAISS_AVAILABLE = False
+    logger.warning("FAISS n'est pas disponible, utilisation de l'index simple")
+    from .simple_index import SimpleIndex
 
 class EmbeddingManager:
     """Gestionnaire pour créer et rechercher des embeddings à partir de la base de connaissances"""
     
     def __init__(self):
-        self.client = AzureOpenAI(
-            api_key=settings.AZURE_OPENAI_API_KEY,
-            api_version=settings.AZURE_OPENAI_API_VERSION,
-            azure_endpoint=settings.AZURE_OPENAI_ENDPOINT
-        )
-        self.embedding_model = settings.EMBEDDING_DEPLOYMENT_NAME
-        self.index_file = os.path.join(os.path.dirname(__file__), "knowledge_index.json")
-        self.embedding_file = os.path.join(os.path.dirname(__file__), "knowledge_embeddings.npy")
-        self.index = None
-        self.documents = []
-        self.embeddings = None
-        logger.info("Gestionnaire d'embeddings initialisé")
+        try:
+            self.client = create_openai_client()
+            self.embedding_model = settings.EMBEDDING_DEPLOYMENT_NAME
+            self.index_file = os.path.join(os.path.dirname(__file__), "knowledge_index.json")
+            self.embedding_file = os.path.join(os.path.dirname(__file__), "knowledge_embeddings.npy")
+            self.index = None
+            self.documents = []
+            self.embeddings = None
+            logger.info("Gestionnaire d'embeddings initialisé")
+        except Exception as e:
+            logger.error(f"Erreur lors de l'initialisation du client OpenAI: {str(e)}")
+            raise
     
     def create_embedding(self, text: str) -> List[float]:
         """Crée un embedding pour un texte donné"""
         try:
+            # Essayer la nouvelle API
             response = self.client.embeddings.create(
                 model=self.embedding_model,
                 input=text
             )
-            embedding = response.data[0].embedding
-            return embedding
+            # Nouvelle structure de réponse
+            if hasattr(response, 'data') and hasattr(response.data[0], 'embedding'):
+                embedding = response.data[0].embedding
+                return embedding
+            # Ancienne structure de réponse possible
+            elif hasattr(response, 'embeddings'):
+                return response.embeddings[0]
+            # Fallback si la structure est différente
+            else:
+                logger.warning("Structure de réponse d'embedding inconnue")
+                return [0.0] * 1536  # Dimension standard pour ADA 002
+        except (AttributeError, TypeError) as e:
+            # Essayer l'ancienne API
+            logger.warning(f"Tentative avec l'ancienne API d'embedding: {str(e)}")
+            try:
+                response = self.client.embeddings.create(
+                    engine=self.embedding_model,
+                    input=text
+                )
+                if hasattr(response, 'data') and hasattr(response.data[0], 'embedding'):
+                    return response.data[0].embedding
+                elif hasattr(response, 'embeddings'):
+                    return response.embeddings[0]
+                else:
+                    logger.warning("Structure de réponse d'embedding inconnue (ancienne API)")
+                    return [0.0] * 1536
+            except Exception as e2:
+                logger.error(f"Erreur lors de la création de l'embedding (ancienne API): {str(e2)}")
+                return [0.0] * 1536  # 1536 est la dimension des embeddings ADA 002
         except Exception as e:
             logger.error(f"Erreur lors de la création de l'embedding: {str(e)}")
-            # Retourner un vecteur de zéros en cas d'erreur (à remplacer par une meilleure stratégie de fallback)
-            return [0.0] * 1536  # 1536 est la dimension des embeddings ADA 002
+            # Retourner un vecteur de zéros en cas d'erreur
+            return [0.0] * 1536
     
     def chunk_document(self, document: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Découpe un document en fragments pour l'embedding"""
@@ -122,10 +159,22 @@ class EmbeddingManager:
         # Convertir en tableau NumPy
         embeddings_array = np.array(embeddings_list).astype('float32')
         
-        # Créer l'index FAISS
+        # Créer l'index de recherche
         dimension = embeddings_array.shape[1]
-        index = faiss.IndexFlatL2(dimension)
-        index.add(embeddings_array)
+        try:
+            if FAISS_AVAILABLE:
+                index = faiss.IndexFlatL2(dimension)
+                index.add(embeddings_array)
+                logger.info("Index FAISS créé avec succès")
+            else:
+                index = SimpleIndex(dimension)
+                index.add(embeddings_array)
+                logger.info("Index simple créé avec succès")
+        except Exception as e:
+            logger.error(f"Erreur lors de la création de l'index: {str(e)}")
+            logger.info("Utilisation de l'index simple comme solution de secours")
+            index = SimpleIndex(dimension)
+            index.add(embeddings_array)
         
         # Sauvegarder l'index et les données
         self.documents = all_chunks
@@ -151,10 +200,22 @@ class EmbeddingManager:
                 # Charger les embeddings
                 self.embeddings = np.load(self.embedding_file)
                 
-                # Reconstruire l'index FAISS
+                # Reconstruire l'index
                 dimension = self.embeddings.shape[1]
-                self.index = faiss.IndexFlatL2(dimension)
-                self.index.add(self.embeddings)
+                try:
+                    if FAISS_AVAILABLE:
+                        self.index = faiss.IndexFlatL2(dimension)
+                        self.index.add(self.embeddings)
+                        logger.info("Index FAISS chargé avec succès")
+                    else:
+                        self.index = SimpleIndex(dimension)
+                        self.index.add(self.embeddings)
+                        logger.info("Index simple chargé avec succès")
+                except Exception as e:
+                    logger.error(f"Erreur lors du chargement de l'index FAISS: {str(e)}")
+                    logger.info("Utilisation de l'index simple comme solution de secours")
+                    self.index = SimpleIndex(dimension)
+                    self.index.add(self.embeddings)
                 
                 logger.info(f"Index chargé avec {len(self.documents)} fragments")
                 return True
@@ -180,7 +241,11 @@ class EmbeddingManager:
         query_embedding_array = np.array([query_embedding]).astype('float32')
         
         # Effectuer la recherche
-        distances, indices = self.index.search(query_embedding_array, top_k * 3)  # Récupérer plus pour filtrer ensuite
+        try:
+            distances, indices = self.index.search(query_embedding_array, top_k * 3)  # Récupérer plus pour filtrer ensuite
+        except Exception as e:
+            logger.error(f"Erreur lors de la recherche: {str(e)}")
+            return []
         
         # Récupérer les résultats
         results = []

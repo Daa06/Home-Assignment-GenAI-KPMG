@@ -119,11 +119,6 @@ if "last_message_content" not in st.session_state:
     st.session_state.last_message_content = ""
     logger.debug("Variable last_message_content initialisée")
 
-# Ajouter une variable pour tracker si un message a été soumis dans cette session
-if "message_submitted" not in st.session_state:
-    st.session_state.message_submitted = False
-    logger.debug("Variable message_submitted initialisée")
-
 # Logger l'état initial de la session
 log_session_state()
 
@@ -195,25 +190,16 @@ def call_api(endpoint: str, data: Dict[str, Any]) -> Dict[str, Any]:
 def process_profile_message(user_message: str) -> None:
     """Processes a message for profile collection."""
     try:
-        # Sauvegarder l'état actuel pour comparaison
-        previous_step = st.session_state.current_step
-        
-        # CORRECTION: Conserver l'historique actuel pour éviter les doublons
-        current_messages = [msg.copy() for msg in st.session_state.conversation_history["messages"]]
-        
-        # Ajouter le message utilisateur à l'historique local avant d'appeler l'API
-        st.session_state.conversation_history["messages"].append({
-            "role": "user",
-            "content": user_message
-        })
-        
         # Préparer les données pour l'API
         data = {
             "user_message": user_message,
-            "conversation_history": {"messages": current_messages},  # Envoyer l'historique SANS le nouveau message
+            "conversation_history": st.session_state.conversation_history,
             "partial_profile": st.session_state.user_profile,
             "current_step": st.session_state.current_step
         }
+        
+        # NE PAS ajouter le message utilisateur à l'historique
+        # L'API s'en charge déjà
         
         # Appeler l'API
         response = call_api(PROFILE_ENDPOINT, data)
@@ -223,76 +209,45 @@ def process_profile_message(user_message: str) -> None:
             st.error("Invalid API response")
             return
         
-        # Ajouter uniquement la réponse de l'assistant à l'historique
-        st.session_state.conversation_history["messages"].append({
-            "role": "assistant",
-            "content": response["response"]
-        })
+        # Ne pas ajouter manuellement la réponse, utiliser l'historique mis à jour
+        # qui vient de l'API
+        if "updated_conversation_history" in response:
+            st.session_state.conversation_history = response["updated_conversation_history"]
+        else:
+            # Si pas d'historique mis à jour, ajouter la réponse manuellement
+            st.session_state.conversation_history["messages"].append({
+                "role": "assistant",
+                "content": response["response"]
+            })
         
         # Mettre à jour le profil si disponible
         if "metadata" in response and "updated_profile" in response["metadata"]:
             st.session_state.user_profile = response["metadata"]["updated_profile"]
-            logger.info(f"Profil mis à jour: {st.session_state.user_profile}")
         
         # Mettre à jour l'étape actuelle si disponible
         if "metadata" in response and "next_step" in response["metadata"]:
-            new_step = response["metadata"]["next_step"]
-            
-            # Journaliser le changement d'étape
-            if new_step != previous_step:
-                logger.info(f"Changement d'étape: {previous_step} -> {new_step}")
-            
-            st.session_state.current_step = new_step
+            st.session_state.current_step = response["metadata"]["next_step"]
             
             # Vérifier si le profil est complet
             if st.session_state.current_step == "confirmation":
                 st.session_state.profile_complete = True
-                logger.info("Profil utilisateur complet!")
-                
-                # Si le profil est complet et que nous recevons une confirmation, proposer de passer en mode QA
-                if user_message.upper() in ["YES", "Y", "OUI"] and st.session_state.profile_complete:
-                    # Notifier l'utilisateur que nous changeons de mode
-                    logger.info("Profil confirmé, passage automatique en mode Q&A")
-                    
-                    # Ajouter un message à l'historique pour informer du changement de mode
-                    st.session_state.conversation_history["messages"].append({
-                        "role": "assistant",
-                        "content": "Your profile is now complete! I'm switching to Q&A mode to help answer your questions about medical services."
-                    })
-                    
-                    # Changer le mode après avoir ajouté le message (affectera le prochain cycle)
-                    st.session_state.mode = "qa"
-        
-        # Réinitialiser le flag de soumission
-        st.session_state.message_submitted = False
-        
-        # Forcer un rerun Streamlit si nécessaire
-        if st.session_state.current_step != previous_step:
-            logger.debug("État de la session modifié, forçage du rafraîchissement...")
-            st.experimental_rerun()
             
     except Exception as e:
         st.error(f"Error processing message: {str(e)}")
-        logger.error(f"Error in process_profile_message: {str(e)}")
+        logging.error(f"Error in process_profile_message: {str(e)}")
 
 def process_qa_message(user_message: str) -> None:
     """Processes a question and generates an answer."""
     try:
-        # CORRECTION: Conserver l'historique actuel pour éviter les doublons
-        current_messages = [msg.copy() for msg in st.session_state.conversation_history["messages"]]
-        
-        # Ajouter le message utilisateur à l'historique local avant d'appeler l'API
-        st.session_state.conversation_history["messages"].append({
-            "role": "user",
-            "content": user_message
-        })
-        
         # Préparer les données pour l'API
         data = {
             "user_message": user_message,
-            "conversation_history": {"messages": current_messages},  # Envoyer l'historique SANS le nouveau message
+            "conversation_history": st.session_state.conversation_history,
             "user_profile": st.session_state.user_profile
         }
+        
+        # NE PAS ajouter le message utilisateur à l'historique
+        # L'API s'en charge déjà
         
         # Appeler l'API
         response = call_api(QA_ENDPOINT, data)
@@ -302,21 +257,19 @@ def process_qa_message(user_message: str) -> None:
             st.error("Invalid API response")
             return
         
-        # Ajouter uniquement la réponse de l'assistant à l'historique
-        st.session_state.conversation_history["messages"].append({
-            "role": "assistant",
-            "content": response["response"]
-        })
-        
-        # Réinitialiser le flag de soumission
-        st.session_state.message_submitted = False
-        
-        # Forcer un rerun Streamlit pour rafraîchir l'interface
-        st.experimental_rerun()
+        # Utiliser directement l'historique mis à jour depuis l'API
+        if "updated_conversation_history" in response:
+            st.session_state.conversation_history = response["updated_conversation_history"]
+        else:
+            # Si pas d'historique mis à jour, ajouter la réponse manuellement
+            st.session_state.conversation_history["messages"].append({
+                "role": "assistant",
+                "content": response["response"]
+            })
             
     except Exception as e:
         st.error(f"Error processing message: {str(e)}")
-        logger.error(f"Error in process_qa_message: {str(e)}")
+        logging.error(f"Error in process_qa_message: {str(e)}")
 
 def reset_session() -> None:
     """Completely resets the session."""
@@ -338,7 +291,6 @@ def reset_session() -> None:
     st.session_state.initialized = False
     st.session_state.last_message_time = 0
     st.session_state.last_message_content = ""
-    st.session_state.message_submitted = False
     
     # Ajouter un message d'accueil initial
     st.session_state.conversation_history["messages"] = [{
@@ -357,10 +309,9 @@ def change_mode(new_mode: str) -> None:
         st.warning("Please complete your profile before using Q&A mode.")
         return
     
-    old_mode = st.session_state.mode
     st.session_state.mode = new_mode
     
-    if new_mode == "profile" and old_mode == "qa":
+    if new_mode == "profile":
         # Réinitialiser l'historique pour le mode profil
         st.session_state.conversation_history = {"messages": []}
         st.session_state.initialized = False
@@ -371,18 +322,19 @@ def change_mode(new_mode: str) -> None:
         }]
         st.session_state.initialized = True
         logger.debug("Historique réinitialisé pour le mode profil")
-    elif new_mode == "qa" and old_mode == "profile":
-        # Conserver l'historique existant et ajouter uniquement le message de transition
-        st.session_state.conversation_history["messages"].append({
+    else:
+        # Réinitialiser l'historique pour le mode Q&A
+        st.session_state.conversation_history = {"messages": []}
+        # Ajouter un message d'accueil pour le mode Q&A
+        st.session_state.conversation_history["messages"] = [{
             "role": "assistant", 
             "content": "I'm ready to answer your questions about medical services based on your profile information. What would you like to know?"
-        })
-        logger.debug("Message de transition ajouté pour le mode Q&A")
+        }]
+        logger.debug("Historique réinitialisé pour le mode Q&A")
     
     # Réinitialiser les variables de contrôle des messages dupliqués
     st.session_state.last_message_time = 0
     st.session_state.last_message_content = ""
-    st.session_state.message_submitted = False
     logger.debug("Variables de contrôle des messages dupliqués réinitialisées")
     log_session_state()
 
@@ -449,7 +401,7 @@ with input_container:
         submit_button = st.form_submit_button("Send")
         
         # Traiter l'entrée de l'utilisateur uniquement lorsque le formulaire est soumis
-        if submit_button and user_input and not st.session_state.message_submitted:
+        if submit_button and user_input:
             logger.debug(f"Formulaire soumis avec le message: '{user_input}'")
             current_time = time.time()
             
@@ -459,18 +411,24 @@ with input_container:
             logger.debug(f"Message actuel: '{user_input}'")
             logger.debug(f"Messages identiques: {user_input == st.session_state.last_message_content}")
             
-            # Marquer le message comme soumis pour éviter les doubles soumissions
-            st.session_state.message_submitted = True
-            
-            # Mettre à jour les variables de contrôle
-            st.session_state.last_message_time = current_time
-            st.session_state.last_message_content = user_input
-            
-            # Traiter le message
-            if st.session_state.mode == "profile":
-                process_profile_message(user_input)
+            # Vérifier s'il s'agit d'un double clic (même message soumis dans un court laps de temps)
+            if (current_time - st.session_state.last_message_time > 1.0 or 
+                user_input != st.session_state.last_message_content):
+                
+                logger.info(f"Message accepté: '{user_input[:30]}...'")
+                # Mettre à jour les variables de contrôle
+                st.session_state.last_message_time = current_time
+                st.session_state.last_message_content = user_input
+                
+                # Traiter le message
+                if st.session_state.mode == "profile":
+                    process_profile_message(user_input)
+                else:
+                    process_qa_message(user_input)
             else:
-                process_qa_message(user_input)
+                # Si c'est un double clic, ne rien faire
+                logger.warning(f"Message dupliqué détecté et ignoré: '{user_input[:30]}...'")
+                pass
             
             # Logger l'état de la session après traitement
             logger.debug("État de la session après traitement du message:")

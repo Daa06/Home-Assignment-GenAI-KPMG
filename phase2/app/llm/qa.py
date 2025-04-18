@@ -1,8 +1,8 @@
 from typing import Dict, Any, List, Optional
-from openai import AzureOpenAI
 from ..core.config import settings
 from ..api.models import Message, ConversationHistory, UserProfile
 from ..knowledge.embedding import EmbeddingManager
+from ..llm.client import create_openai_client
 from loguru import logger
 
 class QAProcessor:
@@ -13,14 +13,14 @@ class QAProcessor:
     
     def __init__(self):
         """Initialise le processeur Q&A avec le client Azure OpenAI."""
-        self.client = AzureOpenAI(
-            api_key=settings.AZURE_OPENAI_API_KEY,
-            api_version=settings.AZURE_OPENAI_API_VERSION,
-            azure_endpoint=settings.AZURE_OPENAI_ENDPOINT
-        )
-        self.model = settings.GPT4O_DEPLOYMENT_NAME
-        self.embedding_manager = EmbeddingManager()
-        logger.info("QAProcessor initialisé")
+        try:
+            self.client = create_openai_client()
+            self.model = settings.GPT4O_DEPLOYMENT_NAME
+            self.embedding_manager = EmbeddingManager()
+            logger.info("QAProcessor initialisé")
+        except Exception as e:
+            logger.error(f"Erreur lors de l'initialisation du client OpenAI: {str(e)}")
+            raise
     
     def detect_language(self, text: str) -> str:
         """

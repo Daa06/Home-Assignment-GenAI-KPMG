@@ -21,7 +21,7 @@ app = FastAPI(
 # Configuration CORS pour permettre les requêtes depuis le frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # À remplacer par les domaines spécifiques en production
+    allow_origins=["http://localhost:8501"],  # Streamlit tourne sur le port 8501
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,23 +47,37 @@ async def add_process_time_header(request: Request, call_next):
 # Point de terminaison pour vérifier la santé de l'API
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "service": settings.APP_NAME}
+    """Vérifie que l'API est en cours d'exécution."""
+    try:
+        return {
+            "status": "ok",
+            "service": settings.APP_NAME,
+            "version": "1.0.0",
+            "endpoints": {
+                "profile": f"{settings.API_V1_STR}/profile",
+                "qa": f"{settings.API_V1_STR}/qa"
+            }
+        }
+    except Exception as e:
+        logger.error(f"Erreur lors de la vérification de santé: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Point de terminaison pour la phase de collecte de profil
 @app.post(f"{settings.API_V1_STR}/profile", response_model=AIResponse)
 async def process_profile_message(request: ProfileRequest, req: Request):
+    """Traite un message pour la collecte de profil utilisateur."""
     session_id = req.headers.get("X-Session-ID", "unknown")
     
-    # Enregistrer la requête
-    log_api_request(
-        endpoint="/profile",
-        request_data=request.dict(),
-        user_id=session_id
-    )
-    
-    start_time = time.time()
-    
     try:
+        # Enregistrer la requête
+        log_api_request(
+            endpoint="/profile",
+            request_data=request.dict(),
+            user_id=session_id
+        )
+        
+        start_time = time.time()
+        
         # Initialiser le collecteur de profil
         profile_collector = ProfileCollector()
         
@@ -75,13 +89,20 @@ async def process_profile_message(request: ProfileRequest, req: Request):
             current_step=request.current_step
         )
         
+        # Vérifier le résultat
+        if not result or "response" not in result:
+            raise HTTPException(
+                status_code=500,
+                detail="Réponse invalide du collecteur de profil"
+            )
+        
         # Préparer la réponse
         response = AIResponse(
-            response=result["response"],
-            updated_conversation_history=result["updated_conversation_history"],
+            response=result.get("response", ""),
+            updated_conversation_history=result.get("updated_history", {"messages": []}),
             metadata={
-                "next_step": result["next_step"],
-                "updated_profile": result["updated_profile"]
+                "next_step": result.get("next_step", ""),
+                "updated_profile": result.get("updated_profile", {})
             }
         )
         
@@ -100,18 +121,6 @@ async def process_profile_message(request: ProfileRequest, req: Request):
         
     except Exception as e:
         logger.error(f"Erreur lors du traitement du message de profil: {str(e)}")
-        
-        process_time = (time.time() - start_time) * 1000
-        
-        # Enregistrer l'erreur
-        log_api_response(
-            endpoint="/profile",
-            status_code=500,
-            response_data={"error": str(e)},
-            processing_time=process_time,
-            user_id=session_id
-        )
-        
         raise HTTPException(
             status_code=500,
             detail=f"Erreur lors du traitement du message: {str(e)}"
@@ -184,10 +193,11 @@ async def process_qa_message(request: QARequest, req: Request):
 # Gestionnaire d'erreurs global
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(f"Exception non gérée: {str(exc)}")
+    """Gestionnaire d'erreurs global pour toutes les exceptions non gérées."""
+    logger.error(f"Erreur non gérée: {str(exc)}")
     return JSONResponse(
         status_code=500,
-        content={"message": "Une erreur interne s'est produite"}
+        content={"detail": "Une erreur interne est survenue. Veuillez réessayer plus tard."}
     )
 
 # Point d'entrée pour démarrer le serveur avec uvicorn

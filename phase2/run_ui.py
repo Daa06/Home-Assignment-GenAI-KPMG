@@ -22,9 +22,12 @@ if __name__ == "__main__":
     
     print(f"Démarrage de l'interface utilisateur Streamlit sur {HOST}:{PORT}")
     
+    # Chemin complet vers l'exécutable streamlit
+    streamlit_path = os.path.expanduser("~/Library/Python/3.9/bin/streamlit")
+    
     # Lancer Streamlit avec les paramètres
     cmd = [
-        "streamlit", "run", 
+        streamlit_path, "run", 
         streamlit_app_path,
         "--server.port", str(PORT),
         "--server.address", HOST,

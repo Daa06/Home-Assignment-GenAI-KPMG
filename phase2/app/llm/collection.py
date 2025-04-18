@@ -1,8 +1,8 @@
 import json
 from typing import Dict, Any, List, Optional
-from openai import AzureOpenAI
 from ..core.config import settings
 from ..api.models import Message, ConversationHistory
+from ..llm.client import create_openai_client
 from loguru import logger
 
 class ProfileCollector:
@@ -13,13 +13,13 @@ class ProfileCollector:
     
     def __init__(self):
         """Initialise le collecteur de profil avec le client Azure OpenAI."""
-        self.client = AzureOpenAI(
-            api_key=settings.AZURE_OPENAI_API_KEY,
-            api_version=settings.AZURE_OPENAI_API_VERSION,
-            azure_endpoint=settings.AZURE_OPENAI_ENDPOINT
-        )
-        self.model = settings.GPT4O_DEPLOYMENT_NAME
-        logger.info("ProfileCollector initialisé")
+        try:
+            self.client = create_openai_client()
+            self.model = settings.GPT4O_DEPLOYMENT_NAME
+            logger.info("ProfileCollector initialisé")
+        except Exception as e:
+            logger.error(f"Erreur lors de l'initialisation du client OpenAI: {str(e)}")
+            raise
     
     def create_system_prompt(self, current_step: Optional[str] = None, 
                               partial_profile: Optional[Dict[str, Any]] = None) -> str:
@@ -35,28 +35,28 @@ class ProfileCollector:
         """
         # Informations sur les champs à collecter et leurs validations
         fields_info = {
-            "first_name": "Prénom de l'utilisateur",
-            "last_name": "Nom de famille de l'utilisateur",
-            "id_number": "Numéro d'identification à 9 chiffres",
-            "gender": "Genre de l'utilisateur",
-            "age": "Âge de l'utilisateur entre 0 et 120",
-            "hmo_name": "Nom de la caisse maladie (מכבי, מאוחדת, כללית)",
-            "hmo_card_number": "Numéro de carte de la caisse maladie à 9 chiffres",
-            "insurance_tier": "Niveau d'assurance (זהב, כסף, ארד)"
+            "first_name": "User's first name",
+            "last_name": "User's last name",
+            "id_number": "9-digit identification number",
+            "gender": "User's gender",
+            "age": "User's age between 0 and 120",
+            "hmo_name": "Health insurance provider name (מכבי, מאוחדת, כללית)",
+            "hmo_card_number": "9-digit health insurance card number",
+            "insurance_tier": "Insurance tier (זהב, כסף, ארד)"
         }
         
         # Règles de validation
         validation_rules = {
-            "id_number": "Doit contenir exactement 9 chiffres",
-            "age": "Doit être un nombre entier entre 0 et 120",
-            "hmo_name": "Doit être l'une des valeurs suivantes: מכבי, מאוחדת, כללית",
-            "hmo_card_number": "Doit contenir exactement 9 chiffres",
-            "insurance_tier": "Doit être l'une des valeurs suivantes: זהב, כסף, ארד"
+            "id_number": "Must contain exactly 9 digits",
+            "age": "Must be an integer between 0 and 120",
+            "hmo_name": "Must be one of the following values: מכבי, מאוחדת, כללית",
+            "hmo_card_number": "Must contain exactly 9 digits",
+            "insurance_tier": "Must be one of the following values: זהב, כסף, ארד"
         }
         
         # Construire le prompt de base
-        prompt = """Tu es un assistant qui aide à collecter des informations médicales personnelles pour un service de chatbot médical israélien. 
-Ta tâche est de collecter les informations suivantes de manière conversationnelle et naturelle:
+        prompt = """You are an assistant helping to collect personal medical information for an Israeli medical chatbot service.
+Your task is to collect the following information in a conversational and natural way:
 
 """
         
@@ -67,20 +67,20 @@ Ta tâche est de collecter les informations suivantes de manière conversationne
             prompt += f"- {field}: {description}{validation_text}\n"
         
         prompt += """
-Règles importantes:
-1. Communique dans la même langue que l'utilisateur (hébreu ou anglais).
-2. Collecte une information à la fois dans un ordre logique.
-3. Si une réponse est invalide, explique gentiment pourquoi et redemande.
-4. Sois poli, patient et professionnel.
-5. Respecte la vie privée de l'utilisateur et explique que ses informations resteront sur son appareil.
-6. Ne demande jamais d'informations médicales sensibles ou de diagnostics.
-7. Une fois toutes les informations collectées, présente un résumé et demande confirmation.
+Important rules:
+1. Communicate in the same language as the user (Hebrew or English).
+2. Collect one piece of information at a time in a logical order.
+3. If a response is invalid, gently explain why and ask again.
+4. Be polite, patient, and professional.
+5. Respect the user's privacy and explain that their information will remain on their device.
+6. Never ask for sensitive medical information or diagnoses.
+7. Once all information is collected, present a summary and ask for confirmation.
 
 """
         
         # Ajouter les informations sur le profil partiel si disponible
         if partial_profile and len(partial_profile) > 0:
-            prompt += "Informations déjà collectées:\n"
+            prompt += "Information already collected:\n"
             for field, value in partial_profile.items():
                 prompt += f"- {field}: {value}\n"
             
@@ -91,15 +91,15 @@ Règles importantes:
             
             if missing_fields:
                 next_field = next(iter(missing_fields))  # Prendre le premier champ manquant
-                prompt += f"\nProchaine information à collecter: {next_field} - {fields_info[next_field]}\n"
+                prompt += f"\nNext information to collect: {next_field} - {fields_info[next_field]}\n"
             else:
-                prompt += "\nToutes les informations ont été collectées. Présente un résumé et demande confirmation.\n"
+                prompt += "\nAll information has been collected. Present a summary and ask for confirmation.\n"
         else:
-            prompt += "\nAucune information n'a encore été collectée. Commence par demander le prénom de l'utilisateur.\n"
+            prompt += "\nNo information has been collected yet. Start by asking for the user's first name.\n"
         
         # Ajouter des instructions spécifiques à l'étape actuelle si disponible
         if current_step:
-            prompt += f"\nÉtape actuelle: {current_step}\n"
+            prompt += f"\nCurrent step: {current_step}\n"
         
         return prompt
     
@@ -114,30 +114,105 @@ Règles importantes:
         return formatted_messages
     
     def extract_profile_information(self, conversation_history: ConversationHistory, 
-                                    partial_profile: Dict[str, Any]) -> Dict[str, Any]:
+                                   partial_profile: Dict[str, Any], current_step: Optional[str] = None) -> Dict[str, Any]:
         """
         Extrait les informations de profil à partir de l'historique de conversation.
         Utilise le LLM pour analyser les réponses et mettre à jour le profil partiel.
         """
         if not conversation_history.messages:
             return partial_profile.copy()
+            
+        # Obtenir le dernier message utilisateur
+        last_user_message = ""
+        for msg in reversed(conversation_history.messages):
+            if msg.role == "user":
+                last_user_message = msg.content.strip()
+                break
+        
+        # Traiter directement les champs simples basés sur l'étape actuelle
+        updated_profile = partial_profile.copy()
+        field_name = current_step.replace("collecting_", "") if current_step else None
+        
+        if field_name and last_user_message:
+            import re
+            # Traitement spécifique selon le type de champ
+            if field_name == "id_number" and re.match(r'^\d{9}$', last_user_message):
+                updated_profile["id_number"] = last_user_message
+                logger.info(f"ID number directement extrait: {last_user_message}")
+                return updated_profile
+                
+            elif field_name == "hmo_card_number" and re.match(r'^\d{9}$', last_user_message):
+                updated_profile["hmo_card_number"] = last_user_message
+                logger.info(f"HMO card number directement extrait: {last_user_message}")
+                return updated_profile
+                
+            elif field_name == "age" and re.match(r'^\d{1,3}$', last_user_message):
+                try:
+                    age = int(last_user_message)
+                    if 0 <= age <= 120:
+                        updated_profile["age"] = age
+                        logger.info(f"Âge directement extrait: {age}")
+                        return updated_profile
+                except ValueError:
+                    pass
+                    
+            elif field_name == "gender" and last_user_message.lower() in ["male", "female", "other", "m", "f", "o"]:
+                gender = last_user_message.upper() if last_user_message.lower() in ["m", "f", "o"] else last_user_message.upper()
+                updated_profile["gender"] = gender
+                logger.info(f"Genre directement extrait: {gender}")
+                return updated_profile
+                
+            elif field_name == "hmo_name" and last_user_message in ["מכבי", "מאוחדת", "כללית"]:
+                updated_profile["hmo_name"] = last_user_message
+                logger.info(f"HMO name directement extrait: {last_user_message}")
+                return updated_profile
+                
+            elif field_name == "insurance_tier" and last_user_message in ["זהב", "כסף", "ארד"]:
+                updated_profile["insurance_tier"] = last_user_message
+                logger.info(f"Insurance tier directement extrait: {last_user_message}")
+                return updated_profile
+                
+            elif field_name in ["first_name", "last_name"]:
+                # Pour les noms, on accepte la plupart des entrées textuelles simples
+                if len(last_user_message) > 0 and len(last_user_message) < 50:
+                    updated_profile[field_name] = last_user_message
+                    logger.info(f"{field_name} directement extrait: {last_user_message}")
+                    return updated_profile
         
         # Créer un prompt spécifique pour l'extraction d'informations
-        extract_prompt = """Extrait toutes les informations de profil valides de la conversation précédente. 
-Retourne uniquement un objet JSON avec les informations extraites, sans aucun texte additionnel.
-N'invente pas d'informations, utilise uniquement celles fournies dans la conversation.
+        extract_prompt = """Extract all valid profile information from the previous conversation.
+Return only a JSON object with the extracted information, without any additional text.
+Do not invent information, use only what was provided in the conversation.
 
-Les champs possibles sont:
-- first_name: Prénom
-- last_name: Nom de famille
-- id_number: Numéro d'ID à 9 chiffres
-- gender: Genre
-- age: Âge (nombre entier entre 0 et 120)
-- hmo_name: Nom de la caisse maladie (מכבי, מאוחדת, כללית)
-- hmo_card_number: Numéro de carte à 9 chiffres
-- insurance_tier: Niveau d'assurance (זהב, כסף, ארד)
+Your response MUST be only a valid JSON object, no other text.
 
-Profil partiel actuel: """ + json.dumps(partial_profile, ensure_ascii=False)
+Example of a valid response format:
+```json
+{
+  "field1": "value1",
+  "field2": "value2"
+}
+```
+
+Possible fields are:
+- first_name: First name
+- last_name: Last name
+- id_number: 9-digit ID number (if the user provides a valid 9-digit number, include it)
+- gender: Gender
+- age: Age (integer between 0 and 120)
+- hmo_name: Health insurance provider name (מכבי, מאוחדת, כללית)
+- hmo_card_number: 9-digit card number
+- insurance_tier: Insurance tier (זהב, כסף, ארד)
+
+Current partial profile: """ + json.dumps(partial_profile, ensure_ascii=False)
+        
+        # Ajouter une vérification spécifique pour l'ID number si nécessaire
+        if current_step == "collecting_id_number" or "id_number" not in partial_profile:
+            import re
+            if re.match(r'^\d{9}$', last_user_message):
+                # Si le message utilisateur est exactement 9 chiffres, c'est probablement un ID
+                # On va explicitement le mentionner dans le prompt
+                extract_prompt += f"\n\nNote: The user message '{last_user_message}' appears to be a valid 9-digit ID number."
         
         # Formater l'historique de conversation
         formatted_history = self.format_conversation_history(conversation_history)
@@ -154,23 +229,74 @@ Profil partiel actuel: """ + json.dumps(partial_profile, ensure_ascii=False)
                 max_tokens=500
             )
             
-            extracted_text = response.choices[0].message.content.strip()
+            # Accéder à la réponse (gestion des deux formats possibles)
+            if hasattr(response, 'choices') and hasattr(response.choices[0], 'message'):
+                # Nouvelle structure objet
+                extracted_text = response.choices[0].message.content.strip()
+            elif isinstance(response, dict) and 'choices' in response:
+                # Ancienne structure dict
+                extracted_text = response["choices"][0]["message"]["content"].strip()
+            else:
+                logger.error("Format de réponse non reconnu")
+                logger.debug(f"Type de réponse: {type(response)}")
+                return partial_profile.copy()
             
             # Tenter de parser le JSON extrait
             try:
                 # Supprimer les marqueurs de code JSON si présents
                 if extracted_text.startswith("```json"):
                     extracted_text = extracted_text.replace("```json", "", 1)
+                elif extracted_text.startswith("```"):
+                    extracted_text = extracted_text.replace("```", "", 1)
+                
                 if extracted_text.endswith("```"):
                     extracted_text = extracted_text[:-3]
                 
+                # Nettoyer le texte
                 extracted_text = extracted_text.strip()
-                extracted_info = json.loads(extracted_text)
+                
+                # Si le texte est vide, retourner le profil partiel existant
+                if not extracted_text:
+                    logger.warning("Texte extrait vide, aucune mise à jour du profil")
+                    return partial_profile.copy()
+                
+                # Vérification manuelle pour l'ID number
+                import re
+                if current_step == "collecting_id_number" or "id_number" not in partial_profile:
+                    if re.match(r'^\d{9}$', last_user_message):
+                        # Forcer l'ajout de l'ID number si le message utilisateur correspond au format
+                        logger.info(f"ID number manuellement extrait du message: {last_user_message}")
+                        extracted_info = {"id_number": last_user_message}
+                        updated_profile = partial_profile.copy()
+                        updated_profile.update(extracted_info)
+                        return updated_profile
+                
+                # Essayer de charger le JSON
+                try:
+                    extracted_info = json.loads(extracted_text)
+                except json.JSONDecodeError:
+                    # Si la première tentative échoue, essayer de trouver et extraire juste la partie JSON
+                    import re
+                    json_pattern = r'\{.*\}'
+                    match = re.search(json_pattern, extracted_text, re.DOTALL)
+                    if match:
+                        try:
+                            extracted_info = json.loads(match.group(0))
+                        except json.JSONDecodeError:
+                            # Si ça échoue encore, logguer l'erreur et retourner le profil existant
+                            logger.error("Impossible de parser le JSON même après nettoyage")
+                            logger.debug(f"Texte extrait après nettoyage: {match.group(0)}")
+                            return partial_profile.copy()
+                    else:
+                        logger.error("Aucun objet JSON trouvé dans la réponse")
+                        logger.debug(f"Texte extrait: {extracted_text}")
+                        return partial_profile.copy()
                 
                 # Mettre à jour le profil partiel avec les nouvelles informations
                 updated_profile = partial_profile.copy()
                 updated_profile.update(extracted_info)
                 
+                logger.info(f"Profil mis à jour avec succès, champs extraits: {list(extracted_info.keys())}")
                 return updated_profile
                 
             except json.JSONDecodeError as e:
@@ -184,13 +310,14 @@ Profil partiel actuel: """ + json.dumps(partial_profile, ensure_ascii=False)
     
     def determine_next_step(self, partial_profile: Dict[str, Any]) -> str:
         """Détermine la prochaine étape de collecte en fonction du profil partiel."""
-        all_fields = [
+        # Définir l'ordre strict de collecte des champs
+        collection_order = [
             "first_name", "last_name", "id_number", "gender", 
             "age", "hmo_name", "hmo_card_number", "insurance_tier"
         ]
         
-        # Vérifier les champs manquants
-        for field in all_fields:
+        # Suivre l'ordre prédéfini pour déterminer le prochain champ à collecter
+        for field in collection_order:
             if field not in partial_profile:
                 return f"collecting_{field}"
         
@@ -237,34 +364,43 @@ Profil partiel actuel: """ + json.dumps(partial_profile, ensure_ascii=False)
                 max_tokens=800
             )
             
-            assistant_message = response.choices[0].message.content.strip()
+            # Accéder à la réponse (gestion des deux formats possibles)
+            if hasattr(response, 'choices') and hasattr(response.choices[0], 'message'):
+                # Nouvelle structure objet
+                assistant_message = response.choices[0].message.content.strip()
+            elif isinstance(response, dict) and 'choices' in response:
+                # Ancienne structure dict
+                assistant_message = response["choices"][0]["message"]["content"].strip()
+            else:
+                logger.error("Format de réponse non reconnu")
+                raise ValueError("Format de réponse OpenAI non reconnu")
             
             # Mise à jour de l'historique avec la réponse de l'assistant
             updated_history.messages.append(Message(role="assistant", content=assistant_message))
             
             # Extraire et mettre à jour le profil
-            updated_profile = self.extract_profile_information(updated_history, partial_profile)
+            updated_profile = self.extract_profile_information(updated_history, partial_profile, current_step)
             
             # Déterminer la prochaine étape
             next_step = self.determine_next_step(updated_profile)
             
             return {
                 "response": assistant_message,
-                "updated_conversation_history": updated_history,
+                "updated_history": updated_history,
                 "updated_profile": updated_profile,
                 "next_step": next_step
             }
             
         except Exception as e:
             logger.error(f"Erreur lors du traitement du message: {str(e)}")
-            error_message = "Je suis désolé, une erreur s'est produite lors du traitement de votre message. Pourriez-vous réessayer?"
+            error_message = "Je suis désolé, une erreur s'est produite lors du traitement de votre message."
             
             # Mise à jour de l'historique avec le message d'erreur
             updated_history.messages.append(Message(role="assistant", content=error_message))
             
             return {
                 "response": error_message,
-                "updated_conversation_history": updated_history,
+                "updated_history": updated_history,
                 "updated_profile": partial_profile,
                 "next_step": current_step
             } 
