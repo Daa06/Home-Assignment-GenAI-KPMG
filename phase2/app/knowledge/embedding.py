@@ -25,9 +25,12 @@ class EmbeddingManager:
             self.embedding_model = settings.EMBEDDING_DEPLOYMENT_NAME
             self.index_file = os.path.join(os.path.dirname(__file__), "knowledge_index.json")
             self.embedding_file = os.path.join(os.path.dirname(__file__), "knowledge_embeddings.npy")
+            self.faiss_index_file = os.path.join(os.path.dirname(__file__), "knowledge_faiss.index")
+            self.metadata_file = os.path.join(os.path.dirname(__file__), "embedding_metadata.json")
             self.index = None
             self.documents = []
             self.embeddings = None
+            self.embedding_metadata = None
             logger.info("Gestionnaire d'embeddings initialisé")
         except Exception as e:
             logger.error(f"Erreur lors de l'initialisation du client OpenAI: {str(e)}")
@@ -50,7 +53,7 @@ class EmbeddingManager:
                 return response.embeddings[0]
             # Fallback si la structure est différente
             else:
-                logger.warning("Structure de réponse d'embedding inconnue")
+                logger.warning(f"Structure de réponse d'embedding inconnue pour '{text[:30]}...'")
                 return [0.0] * 1536  # Dimension standard pour ADA 002
         except (AttributeError, TypeError) as e:
             # Essayer l'ancienne API
@@ -90,7 +93,9 @@ class EmbeddingManager:
                 'metadata': {
                     'service_type': document.get('service_type', ''),
                     'source_file': document.get('source_file', ''),
-                    'chunk_type': 'introduction'
+                    'chunk_type': 'introduction',
+                    'hmo_name': None,
+                    'insurance_tier': None
                 }
             })
         
@@ -107,7 +112,28 @@ class EmbeddingManager:
                         hmo_name = headers[i]
                         hmo_data = row[i]
                         
+                        # Essayer d'extraire le niveau d'assurance à partir du texte
+                        insurance_tier = None
+                        for tier in ["זהב", "כסף", "ארד"]:  # Gold, Silver, Bronze
+                            if tier in hmo_data:
+                                insurance_tier = tier
+                                break
+                        
                         chunk_text = f"Service: {service_name}\nHMO: {hmo_name}\nDétails: {hmo_data}"
+                        
+                        # Ajouter des mots-clés en anglais pour améliorer la recherche
+                        if document.get('service_type') == "pragrency_services":
+                            chunk_text += "\nKeywords: pregnancy, prenatal, birth, maternity, pregnant"
+                        elif document.get('service_type') == "dentel_services":
+                            chunk_text += "\nKeywords: dental, teeth, tooth, dentist, oral"
+                        elif document.get('service_type') == "optometry_services":
+                            chunk_text += "\nKeywords: vision, eye, glasses, contact lenses, optometry"
+                        elif document.get('service_type') == "communication_clinic_services":
+                            chunk_text += "\nKeywords: speech, hearing, communication, language, therapy"
+                        elif document.get('service_type') == "alternative_services":
+                            chunk_text += "\nKeywords: alternative medicine, acupuncture, homeopathy, massage, natural"
+                        elif document.get('service_type') == "workshops_services":
+                            chunk_text += "\nKeywords: workshop, class, group, training, education"
                         
                         chunks.append({
                             'text': chunk_text,
@@ -118,7 +144,8 @@ class EmbeddingManager:
                                 'table_idx': table_idx,
                                 'row_idx': row_idx,
                                 'service_name': service_name,
-                                'hmo_name': hmo_name
+                                'hmo_name': hmo_name,
+                                'insurance_tier': insurance_tier
                             }
                         })
         
@@ -134,7 +161,9 @@ class EmbeddingManager:
                 'metadata': {
                     'service_type': document.get('service_type', ''),
                     'source_file': document.get('source_file', ''),
-                    'chunk_type': 'contact'
+                    'chunk_type': 'contact',
+                    'hmo_name': None,
+                    'insurance_tier': None
                 }
             })
         
@@ -187,11 +216,42 @@ class EmbeddingManager:
         
         np.save(self.embedding_file, self.embeddings)
         
+        # Sauvegarder l'index FAISS
+        if FAISS_AVAILABLE:
+            faiss.write_index(self.index, self.faiss_index_file)
+        
+        # Créer les métadonnées des embeddings
+        embedding_metadata = {
+            'total_embeddings': len(self.documents),
+            'dimension': dimension,
+            'service_types': list(set(doc.get('metadata', {}).get('service_type', '') for doc in self.documents)),
+            'hmo_names': list(set(doc.get('metadata', {}).get('hmo_name', '') for doc in self.documents if doc.get('metadata', {}).get('hmo_name'))),
+            'insurance_tiers': list(set(doc.get('metadata', {}).get('insurance_tier', '') for doc in self.documents if doc.get('metadata', {}).get('insurance_tier'))),
+            'created_at': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'embeddings': [
+                {
+                    'index': i,
+                    'text_preview': doc['text'][:100] + '...' if len(doc['text']) > 100 else doc['text'],
+                    'service_type': doc.get('metadata', {}).get('service_type', ''),
+                    'chunk_type': doc.get('metadata', {}).get('chunk_type', ''),
+                    'hmo_name': doc.get('metadata', {}).get('hmo_name'),
+                    'insurance_tier': doc.get('metadata', {}).get('insurance_tier'),
+                    'embedding_dimension': dimension
+                }
+                for i, doc in enumerate(self.documents)
+            ]
+        }
+        
+        with open(self.metadata_file, 'w', encoding='utf-8') as f:
+            json.dump(embedding_metadata, f, ensure_ascii=False, indent=2)
+        
+        self.embedding_metadata = embedding_metadata
+        
         logger.info(f"Index construit avec {len(all_chunks)} fragments")
     
     def load_index(self) -> bool:
         """Charge l'index depuis le disque s'il existe"""
-        if os.path.exists(self.index_file) and os.path.exists(self.embedding_file):
+        if os.path.exists(self.index_file) and os.path.exists(self.faiss_index_file):
             try:
                 # Charger les documents
                 with open(self.index_file, 'r', encoding='utf-8') as f:
@@ -200,22 +260,21 @@ class EmbeddingManager:
                 # Charger les embeddings
                 self.embeddings = np.load(self.embedding_file)
                 
-                # Reconstruire l'index
-                dimension = self.embeddings.shape[1]
-                try:
-                    if FAISS_AVAILABLE:
-                        self.index = faiss.IndexFlatL2(dimension)
-                        self.index.add(self.embeddings)
-                        logger.info("Index FAISS chargé avec succès")
-                    else:
-                        self.index = SimpleIndex(dimension)
-                        self.index.add(self.embeddings)
-                        logger.info("Index simple chargé avec succès")
-                except Exception as e:
-                    logger.error(f"Erreur lors du chargement de l'index FAISS: {str(e)}")
-                    logger.info("Utilisation de l'index simple comme solution de secours")
+                # Charger les métadonnées
+                with open(self.metadata_file, 'r', encoding='utf-8') as f:
+                    self.embedding_metadata = json.load(f)
+                    logger.info(f"Métadonnées d'embedding chargées: {self.embedding_metadata.get('total_embeddings')} embeddings, "
+                               f"dimension {self.embedding_metadata.get('dimension')}")
+                
+                # Charger l'index FAISS
+                if FAISS_AVAILABLE:
+                    self.index = faiss.read_index(self.faiss_index_file)
+                    logger.info(f"Index FAISS chargé avec succès: {self.index.ntotal} vecteurs")
+                else:
+                    dimension = self.embeddings.shape[1]
                     self.index = SimpleIndex(dimension)
                     self.index.add(self.embeddings)
+                    logger.info("Index simple chargé avec succès")
                 
                 logger.info(f"Index chargé avec {len(self.documents)} fragments")
                 return True
@@ -228,8 +287,14 @@ class EmbeddingManager:
             return False
     
     def search(self, query: str, top_k: int = 5, 
-               filter_hmo: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Recherche les documents les plus pertinents pour une requête"""
+               filter_hmo: Optional[str] = None,
+               filter_tier: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        Recherche les documents les plus pertinents pour une requête
+        en utilisant deux types de recherche:
+        1. Documents spécifiques (HMO + tier)
+        2. Documents généraux (NULL values)
+        """
         if self.index is None:
             success = self.load_index()
             if not success:
@@ -240,30 +305,176 @@ class EmbeddingManager:
         query_embedding = self.create_embedding(query)
         query_embedding_array = np.array([query_embedding]).astype('float32')
         
-        # Effectuer la recherche
+        # Effectuer la recherche vectorielle
         try:
-            distances, indices = self.index.search(query_embedding_array, top_k * 3)  # Récupérer plus pour filtrer ensuite
+            # Récupérer tous les indices de notre index
+            all_indices = np.arange(len(self.documents))
+            
+            # Logger les valeurs uniques de HMO et tier pour diagnostic
+            hmo_values = set()
+            tier_values = set()
+            for idx in all_indices:
+                if idx < len(self.documents):
+                    metadata = self.documents[idx].get('metadata', {})
+                    if metadata.get('hmo_name'):
+                        hmo_values.add(metadata.get('hmo_name'))
+                    if metadata.get('insurance_tier'):
+                        tier_values.add(metadata.get('insurance_tier'))
+            
+            logger.info(f"Valeurs uniques de HMO dans l'index: {hmo_values}")
+            logger.info(f"Valeurs uniques de tier dans l'index: {tier_values}")
+            logger.info(f"Recherche pour HMO={filter_hmo!r}, tier={filter_tier!r}")
+            
+            # Filtrer les indices pour Recherche A: (HMO≈filter_hmo ET tier≈filter_tier)
+            specific_indices = []
+            for idx in all_indices:
+                if idx < len(self.documents):
+                    metadata = self.documents[idx].get('metadata', {})
+                    hmo_name = metadata.get('hmo_name')
+                    insurance_tier = metadata.get('insurance_tier')
+                    
+                    # Utiliser 'in' pour une comparaison plus souple
+                    hmo_match = False
+                    tier_match = False
+                    
+                    if hmo_name and filter_hmo:
+                        # Enlever les espaces et comparer
+                        hmo_match = filter_hmo.strip() in hmo_name.strip() or hmo_name.strip() in filter_hmo.strip()
+                    
+                    if insurance_tier and filter_tier:
+                        # Enlever les espaces et comparer
+                        tier_match = filter_tier.strip() in insurance_tier.strip() or insurance_tier.strip() in filter_tier.strip()
+                    
+                    if hmo_match and tier_match:
+                        specific_indices.append(idx)
+                        
+                        # Log quelques exemples pour diagnostic
+                        if len(specific_indices) <= 5:
+                            logger.info(f"Document spécifique trouvé - HMO: {hmo_name!r}, Tier: {insurance_tier!r}")
+            
+            # Filtrer les indices pour Recherche B: (HMO IS NULL ET tier IS NULL)
+            general_indices = []
+            for idx in all_indices:
+                if idx < len(self.documents):
+                    metadata = self.documents[idx].get('metadata', {})
+                    if (metadata.get('hmo_name') is None and 
+                        metadata.get('insurance_tier') is None):
+                        general_indices.append(idx)
+            
+            # Si aucun document spécifique trouvé, essayer avec une recherche plus large
+            if len(specific_indices) == 0:
+                logger.warning(f"Aucun document spécifique trouvé avec le filtre exact. Tentative avec filtre élargi.")
+                
+                # Recherche élargie: correspond à HMO OU à tier (pas les deux)
+                for idx in all_indices:
+                    if idx < len(self.documents):
+                        metadata = self.documents[idx].get('metadata', {})
+                        hmo_name = metadata.get('hmo_name')
+                        insurance_tier = metadata.get('insurance_tier')
+                        
+                        hmo_match = False
+                        tier_match = False
+                        
+                        if hmo_name and filter_hmo:
+                            hmo_match = filter_hmo.strip() in hmo_name.strip() or hmo_name.strip() in filter_hmo.strip()
+                        
+                        if insurance_tier and filter_tier:
+                            tier_match = filter_tier.strip() in insurance_tier.strip() or insurance_tier.strip() in filter_tier.strip()
+                        
+                        # Il suffit que l'un des deux corresponde
+                        if hmo_match or tier_match:
+                            specific_indices.append(idx)
+                            
+                            # Log quelques exemples
+                            if len(specific_indices) <= 5:
+                                logger.info(f"Document trouvé avec filtre élargi - HMO: {hmo_name!r}, Tier: {insurance_tier!r}")
+            
+            # Convertir les listes d'indices en tableaux NumPy
+            specific_indices_array = np.array(specific_indices).astype('int64')
+            general_indices_array = np.array(general_indices).astype('int64')
+            
+            logger.info(f"Recherche A: {len(specific_indices)} documents spécifiques trouvés pour HMO={filter_hmo}, tier={filter_tier}")
+            logger.info(f"Recherche B: {len(general_indices)} documents généraux trouvés")
+            
+            # Définir le nombre max de résultats à retourner pour chaque recherche
+            specific_top_k = min(30, len(specific_indices))
+            general_top_k = min(10, len(general_indices))
+            
+            # Effectuer les deux recherches
+            results_A = []
+            results_B = []
+            
+            # Recherche A: documents spécifiques (HMO + tier)
+            if len(specific_indices) > 0:
+                # Créer un sous-index pour les documents spécifiques
+                if FAISS_AVAILABLE:
+                    # Extraire les embeddings des documents spécifiques
+                    specific_embeddings = self.embeddings[specific_indices]
+                    
+                    # Créer un index temporaire
+                    specific_index = faiss.IndexFlatL2(specific_embeddings.shape[1])
+                    specific_index.add(specific_embeddings)
+                    
+                    # Effectuer la recherche
+                    specific_distances, specific_idx = specific_index.search(query_embedding_array, specific_top_k)
+                    
+                    # Convertir les indices relatifs en indices absolus
+                    absolute_indices = [specific_indices[idx] for idx in specific_idx[0]]
+                    
+                    # Récupérer les résultats
+                    for i, idx in enumerate(absolute_indices):
+                        if idx < len(self.documents):
+                            document = self.documents[idx].copy()
+                            document['score'] = float(1.0 / (1.0 + specific_distances[0][i]))
+                            results_A.append(document)
+            
+            # Recherche B: documents généraux (NULL values)
+            if len(general_indices) > 0:
+                # Créer un sous-index pour les documents généraux
+                if FAISS_AVAILABLE:
+                    # Extraire les embeddings des documents généraux
+                    general_embeddings = self.embeddings[general_indices]
+                    
+                    # Créer un index temporaire
+                    general_index = faiss.IndexFlatL2(general_embeddings.shape[1])
+                    general_index.add(general_embeddings)
+                    
+                    # Effectuer la recherche
+                    general_distances, general_idx = general_index.search(query_embedding_array, general_top_k)
+                    
+                    # Convertir les indices relatifs en indices absolus
+                    absolute_indices = [general_indices[idx] for idx in general_idx[0]]
+                    
+                    # Récupérer les résultats
+                    for i, idx in enumerate(absolute_indices):
+                        if idx < len(self.documents):
+                            document = self.documents[idx].copy()
+                            document['score'] = float(1.0 / (1.0 + general_distances[0][i]))
+                            results_B.append(document)
+            
+            # Fusionner les résultats
+            merged_results = results_A + results_B
+            
+            # Trier par score décroissant
+            merged_results.sort(key=lambda x: x['score'], reverse=True)
+            
+            # Limiter au nombre demandé
+            final_results = merged_results[:top_k]
+            
+            # Analyser les types de services inclus
+            service_types_included = {doc.get('metadata', {}).get('service_type', 'unknown') for doc in final_results}
+            logger.info(f"Recherche terminée. Types de services inclus: {service_types_included}")
+            
+            return final_results
+            
         except Exception as e:
             logger.error(f"Erreur lors de la recherche: {str(e)}")
+            logger.exception("Détails de l'erreur:")
             return []
-        
-        # Récupérer les résultats
-        results = []
-        for idx, distance in zip(indices[0], distances[0]):
-            if idx < len(self.documents):
-                document = self.documents[idx].copy()
-                document['score'] = float(1.0 / (1.0 + distance))  # Convertir la distance en score de similarité
-                
-                # Appliquer le filtre HMO si spécifié
-                if filter_hmo is None or document.get('metadata', {}).get('hmo_name') in [filter_hmo, None]:
-                    results.append(document)
-        
-        # Trier par score et limiter au top_k
-        results.sort(key=lambda x: x['score'], reverse=True)
-        return results[:top_k]
 
 # Exemple d'utilisation
 if __name__ == "__main__":
+    import time
     from processor import KnowledgeProcessor
     
     processor = KnowledgeProcessor()

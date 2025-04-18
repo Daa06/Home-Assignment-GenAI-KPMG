@@ -104,25 +104,27 @@ Your role is to answer accurate questions based on the information available in 
             prompt += """הנחיות:
 1. השתמש תמיד בשפה בה המשתמש פונה אליך (עברית או אנגלית).
 2. ספק מידע ספציפי לקופת החולים ורמת הביטוח של המשתמש.
-3. אם המידע לא זמין, ציין זאת בבירור במקום להמציא תשובות.
-4. היה מנומס, מקצועי ותמציתי.
-5. בסס את תשובותיך אך ורק על המידע שסופק לך במסמך ההקשר.
-6. אל תעביר ביקורת על קופות חולים או שירותים.
-7. אל תציע אבחנות רפואיות או המלצות טיפוליות.
+3. חשוב: השתמש בכל מידע רלוונטי ממסמך ההקשר, גם אם אינו תואם באופן מושלם. חלץ וסכם התאמות חלקיות או מידע קשור אם זמין.
+4. ציין שהמידע אינו זמין רק אם אתה בהחלט לא יכול למצוא פרטים רלוונטיים כלשהם בהקשר.
+5. היה מנומס, מקצועי ותמציתי.
+6. בסס את תשובותיך אך ורק על המידע שסופק לך במסמך ההקשר.
+7. אל תעביר ביקורת על קופות חולים או שירותים.
+8. אל תציע אבחנות רפואיות או המלצות טיפוליות.
 
-ענה כעת על שאלת המשתמש בהתבסס על המידע שיסופק בהקשר.
+ענה כעת על שאלת המשתמש בהתבסס על המידע שסופק בהקשר.
 """
         else:
             prompt += """Guidelines:
 1. Always use the language in which the user addresses you (Hebrew or English).
 2. Provide information specific to the user's HMO and insurance tier.
-3. If information is not available, clearly state this rather than making up answers.
-4. Be polite, professional, and concise.
-5. Base your answers only on the information provided to you in the context document.
-6. Do not criticize HMOs or services.
-7. Do not offer medical diagnoses or treatment recommendations.
+3. IMPORTANT: Use ANY relevant information from the context document, even if it's not a perfect match. Extract and summarize partial matches or related information if available.
+4. Only state that information is not available if you absolutely cannot find ANY relevant details in the context.
+5. Be polite, professional, and concise.
+6. Base your answers only on the information provided to you in the context document.
+7. Do not criticize HMOs or services.
+8. Do not offer medical diagnoses or treatment recommendations.
 
-Now answer the user's question based on the information that will be provided in the context.
+Now answer the user's question based on the information provided in the context.
 """
         
         return prompt
@@ -158,8 +160,13 @@ Now answer the user's question based on the information that will be provided in
             search_results = self.embedding_manager.search(
                 query=user_message,
                 top_k=5,
-                filter_hmo=user_profile.hmo_name
+                filter_hmo=user_profile.hmo_name,
+                filter_tier=user_profile.insurance_tier
             )
+            
+            # Pour la journalisation
+            logger.info(f"Recherche effectuée avec HMO={user_profile.hmo_name}, Tier={user_profile.insurance_tier}")
+            logger.info(f"Nombre de résultats trouvés: {len(search_results)}")
             
             # Préparer le contexte à partir des résultats de recherche
             context = "Informations contextuelles extraites de la base de connaissances:\n\n"
@@ -183,7 +190,17 @@ Now answer the user's question based on the information that will be provided in
                 max_tokens=1000
             )
             
-            assistant_message = response.choices[0].message.content.strip()
+            # Accéder à la réponse (gestion des deux formats possibles)
+            if hasattr(response, 'choices') and hasattr(response.choices[0], 'message'):
+                # Nouvelle structure objet
+                assistant_message = response.choices[0].message.content.strip()
+            elif isinstance(response, dict) and 'choices' in response:
+                # Ancienne structure dict
+                assistant_message = response["choices"][0]["message"]["content"].strip()
+            else:
+                logger.error(f"Format de réponse non reconnu: {type(response)}")
+                logger.debug(f"Réponse: {response}")
+                raise ValueError("Format de réponse OpenAI non reconnu")
             
             # Mise à jour de l'historique avec la réponse de l'assistant
             updated_history.messages.append(Message(role="assistant", content=assistant_message))
