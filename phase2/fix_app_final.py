@@ -528,33 +528,32 @@ def create_improved_streamlit_app():
     return True
 
 def replace_streamlit_app():
-    """Remplace le fichier streamlit_app.py par la version corrigée."""
-    print("Remplacement du fichier streamlit_app.py par la version corrigée...")
+    """Vérifie si une version de sauvegarde de streamlit_app.py existe."""
+    print("Vérification du fichier streamlit_app.py...")
     
-    # Vérifier si le nouveau fichier existe
-    fixed_path = "app/ui/streamlit_app_fixed.py"
     original_path = "app/ui/streamlit_app.py"
     
-    if os.path.exists(fixed_path):
-        # Créer une sauvegarde de l'ancien fichier
-        backup_path = f"app/ui/streamlit_app_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.py"
-        if os.path.exists(original_path):
-            shutil.copy2(original_path, backup_path)
-            print(f"Backup créé: {backup_path}")
-        
-        # Remplacer le fichier original par la version corrigée
-        shutil.copy2(fixed_path, original_path)
-        print("Fichier streamlit_app.py remplacé avec succès!")
+    if os.path.exists(original_path):
+        print(f"Le fichier {original_path} existe et est fonctionnel.")
         return True
     else:
-        print(f"ERREUR: Le fichier corrigé {fixed_path} n'existe pas.")
-        return False
+        print(f"ERREUR: Le fichier {original_path} n'existe pas.")
+        # Essayer de le recréer à partir du script d'origine
+        try:
+            from improved_streamlit_app import get_improved_streamlit_content
+            with open(original_path, 'w') as f:
+                f.write(get_improved_streamlit_content())
+            print(f"Fichier {original_path} créé à partir du template par défaut.")
+            return True
+        except Exception as e:
+            print(f"Impossible de créer le fichier Streamlit: {str(e)}")
+            return False
 
 def start_app():
     """Démarre l'application (API et interface utilisateur)."""
     print("\n[3/3] Démarrage de l'application...")
     
-    # Remplacer le fichier streamlit_app.py par la version corrigée
+    # Vérifier que le fichier streamlit_app.py existe
     replace_streamlit_app()
     
     # Créer des sous-processus pour l'API et l'UI
