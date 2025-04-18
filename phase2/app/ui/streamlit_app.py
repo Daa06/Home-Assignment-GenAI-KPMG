@@ -110,7 +110,7 @@ if "initialized" not in st.session_state:
     st.session_state.initialized = True
     logger.info("Message d'accueil initial ajouté à l'historique")
 
-# Ajouter une variable pour éviter les soumissions dupliquées
+# Add a variable to avoid duplicate submissions
 if "last_message_time" not in st.session_state:
     st.session_state.last_message_time = 0
     logger.debug("Variable last_message_time initialisée")
@@ -119,28 +119,28 @@ if "last_message_content" not in st.session_state:
     st.session_state.last_message_content = ""
     logger.debug("Variable last_message_content initialisée")
 
-# Ajouter une variable pour tracker si un message a été soumis dans cette session
+# Add a variable to track if a message has been submitted in this session
 if "message_submitted" not in st.session_state:
     st.session_state.message_submitted = False
     logger.debug("Variable message_submitted initialisée")
 
-# Ajouter un compteur pour générer des clés de formulaire uniques
+# Add a counter to generate unique form keys
 if "form_key_counter" not in st.session_state:
     st.session_state.form_key_counter = 0
     logger.debug("Variable form_key_counter initialisée")
 
-# Logger l'état initial de la session
+# Log the initial state of the session
 log_session_state()
 
 def detect_language(text: str) -> str:
     """Detects if text is primarily in Hebrew or English."""
-    # Plages Unicode pour l'hébreu
+    # Unicode ranges for Hebrew
     hebrew_chars = ['\u0590', '\u05FF']
     
-    # Compter les caractères hébreux
+    # Count Hebrew characters
     hebrew_count = sum(1 for char in text if hebrew_chars[0] <= char <= hebrew_chars[1])
     
-    # Si plus de 30% des caractères sont hébreux, considérer comme de l'hébreu
+    # If more than 30% of characters are Hebrew, consider it Hebrew
     if hebrew_count > 0.3 * len(text):
         return 'he'
     return 'en'
@@ -182,7 +182,7 @@ def call_api(endpoint: str, data: Dict[str, Any]) -> Dict[str, Any]:
             timeout=60
         )
         
-        # Vérifier si la requête a réussi
+        # Check if the request was successful
         response.raise_for_status()
         
         logger.debug(f"Réponse API reçue: {response.status_code}")
@@ -200,82 +200,82 @@ def call_api(endpoint: str, data: Dict[str, Any]) -> Dict[str, Any]:
 def process_profile_message(user_message: str) -> None:
     """Processes a message for profile collection."""
     try:
-        # Sauvegarder l'état actuel pour comparaison
+        # Save the current state for comparison
         previous_step = st.session_state.current_step
         
-        # CORRECTION: Conserver l'historique actuel pour éviter les doublons
+        # CORRECTION: Keep the current history to avoid duplicates
         current_messages = [msg.copy() for msg in st.session_state.conversation_history["messages"]]
         
-        # Ajouter le message utilisateur à l'historique local avant d'appeler l'API
+        # Add the user message to the local history before calling the API
         st.session_state.conversation_history["messages"].append({
             "role": "user",
             "content": user_message
         })
         
-        # Préparer les données pour l'API
+        # Prepare data for the API
         data = {
             "user_message": user_message,
-            "conversation_history": {"messages": current_messages},  # Envoyer l'historique SANS le nouveau message
+            "conversation_history": {"messages": current_messages},  # Send history WITHOUT the new message
             "partial_profile": st.session_state.user_profile,
             "current_step": st.session_state.current_step
         }
         
-        # Appeler l'API
+        # Call the API
         response = call_api(PROFILE_ENDPOINT, data)
         
-        # Vérifier si la réponse est valide
+        # Check if the response is valid
         if not response or "response" not in response:
             st.error("Invalid API response")
             return
         
-        # Ajouter uniquement la réponse de l'assistant à l'historique
+        # Add only the assistant's response to the history
         st.session_state.conversation_history["messages"].append({
             "role": "assistant",
             "content": response["response"]
         })
         
-        # Mettre à jour le profil si disponible
+        # Update the profile if available
         if "metadata" in response and "updated_profile" in response["metadata"]:
             st.session_state.user_profile = response["metadata"]["updated_profile"]
             logger.info(f"Profil mis à jour: {st.session_state.user_profile}")
         
-        # Mettre à jour l'étape actuelle si disponible
+        # Update the current step if available
         if "metadata" in response and "next_step" in response["metadata"]:
             new_step = response["metadata"]["next_step"]
             
-            # Journaliser le changement d'étape
+            # Log the step change
             if new_step != previous_step:
                 logger.info(f"Changement d'étape: {previous_step} -> {new_step}")
             
             st.session_state.current_step = new_step
             
-            # Vérifier si le profil est complet
+            # Check if the profile is complete
             if st.session_state.current_step == "confirmation":
                 st.session_state.profile_complete = True
                 logger.info("Profil utilisateur complet!")
                 
-                # Si le profil est complet et que nous recevons une confirmation, proposer de passer en mode QA
+                # If the profile is complete and we receive a confirmation, offer to switch to QA mode
                 if user_message.upper() in ["YES", "Y", "OUI"] and st.session_state.profile_complete:
-                    # Notifier l'utilisateur que nous changeons de mode
+                    # Notify the user that we are changing mode
                     logger.info("Profil confirmé, passage automatique en mode Q&A")
                     
-                    # Ajouter un message à l'historique pour informer du changement de mode
+                    # Add a message to the history to inform about the mode change
                     st.session_state.conversation_history["messages"].append({
                         "role": "assistant",
                         "content": "Your profile is now complete! I'm switching to Q&A mode to help answer your questions about medical services."
                     })
                     
-                    # Changer le mode après avoir ajouté le message (affectera le prochain cycle)
+                    # Change the mode after adding the message (will affect the next cycle)
                     st.session_state.mode = "qa"
         
-        # Réinitialiser le flag de soumission
+        # Reset the submission flag
         st.session_state.message_submitted = False
         
-        # Logger l'état de la session après traitement
+        # Log the session state after processing
         logger.debug("État de la session après traitement du message:")
         log_session_state()
         
-        # Toujours forcer un rerun après traitement pour actualiser l'interface
+        # Always force a rerun after processing to update the interface
         st.experimental_rerun()
         
     except Exception as e:
@@ -285,37 +285,37 @@ def process_profile_message(user_message: str) -> None:
 def process_qa_message(user_message: str) -> None:
     """Processes a question and generates an answer."""
     try:
-        # CORRECTION: Conserver l'historique actuel pour éviter les doublons
+        # CORRECTION: Keep the current history to avoid duplicates
         current_messages = [msg.copy() for msg in st.session_state.conversation_history["messages"]]
         
-        # Ajouter le message utilisateur à l'historique local avant d'appeler l'API
+        # Add the user message to the local history before calling the API
         st.session_state.conversation_history["messages"].append({
             "role": "user",
             "content": user_message
         })
         
-        # Préparer les données pour l'API
+        # Prepare data for the API
         data = {
             "user_message": user_message,
-            "conversation_history": {"messages": current_messages},  # Envoyer l'historique SANS le nouveau message
+            "conversation_history": {"messages": current_messages},  # Send history WITHOUT the new message
             "user_profile": st.session_state.user_profile
         }
         
-        # Appeler l'API
+        # Call the API
         response = call_api(QA_ENDPOINT, data)
         
-        # Vérifier si la réponse est valide
+        # Check if the response is valid
         if not response or "response" not in response:
             st.error("Invalid API response")
             return
         
-        # Ajouter uniquement la réponse de l'assistant à l'historique
+        # Add only the assistant's response to the history
         st.session_state.conversation_history["messages"].append({
             "role": "assistant",
             "content": response["response"]
         })
         
-        # Réinitialiser le flag de soumission
+        # Reset the submission flag
         st.session_state.message_submitted = False
         
         # Forcer un rerun Streamlit pour rafraîchir l'interface
@@ -343,11 +343,11 @@ def reset_session() -> None:
     st.session_state.mode = "profile"
     st.session_state.current_step = "collecting_first_name"
     st.session_state.initialized = False
-    st.session_state.last_message_time = 0
-    st.session_state.last_message_content = ""
     st.session_state.message_submitted = False
     # Réinitialiser le compteur de clé de formulaire
     st.session_state.form_key_counter = 0
+    st.session_state.last_message_time = 0
+    st.session_state.last_message_content = ""
     
     # Ajouter un message d'accueil initial
     st.session_state.conversation_history["messages"] = [{
@@ -388,12 +388,12 @@ def change_mode(new_mode: str) -> None:
         })
         logger.debug("Message de transition ajouté pour le mode Q&A")
     
-    # Réinitialiser les variables de contrôle des messages dupliqués
-    st.session_state.last_message_time = 0
-    st.session_state.last_message_content = ""
+    # Reset the submission flag
     st.session_state.message_submitted = False
     # Réinitialiser le compteur de clé de formulaire
     st.session_state.form_key_counter = 0
+    st.session_state.last_message_time = 0
+    st.session_state.last_message_content = ""
     logger.debug("Variables de contrôle des messages dupliqués réinitialisées")
     log_session_state()
 

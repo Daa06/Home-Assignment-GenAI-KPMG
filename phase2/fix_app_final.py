@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Script final pour corriger l'application Phase 2.
-Ce script résout le problème des clients OpenAI et initialise l'application.
+Final script to fix the Phase 2 application.
+This script resolves OpenAI client issues and initializes the application.
 """
 
 import os
@@ -12,16 +12,16 @@ import time
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Ajouter le répertoire courant au path
+# Add current directory to path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-# Charger les variables d'environnement
+# Load environment variables
 load_dotenv()
 
 def setup_logging():
-    """Configure et initialise le système de logs."""
+    """Configure and initialize the logging system."""
     try:
-        # Créer le dossier logs s'il n'existe pas déjà
+        # Create logs folder if it doesn't already exist
         logs_dir = os.path.join(os.path.dirname(__file__), "logs")
         api_logs_dir = os.path.join(logs_dir, "api")
         ui_logs_dir = os.path.join(logs_dir, "ui")
@@ -30,55 +30,55 @@ def setup_logging():
         os.makedirs(api_logs_dir, exist_ok=True)
         os.makedirs(ui_logs_dir, exist_ok=True)
         
-        # Vérifier que le fichier logger.py existe et est correctement configuré
+        # Check that logger.py file exists and is correctly configured
         logger_path = os.path.join("app", "logging", "logger.py")
         if not os.path.exists(logger_path):
-            # Créer l'arborescence si nécessaire
+            # Create directory structure if needed
             os.makedirs(os.path.join("app", "logging"), exist_ok=True)
             
-            # Création de __init__.py dans le dossier logging s'il n'existe pas
+            # Create __init__.py in the logging folder if it doesn't exist
             init_path = os.path.join("app", "logging", "__init__.py")
             if not os.path.exists(init_path):
                 with open(init_path, 'w') as f:
-                    f.write("# Module de journalisation\n")
+                    f.write("# Logging module\n")
         
-        print(f"Système de logs configuré avec succès. Dossiers créés: {logs_dir}")
+        print(f"Logging system successfully configured. Created folders: {logs_dir}")
         return True
     except Exception as e:
-        print(f"Erreur lors de la configuration des logs: {str(e)}")
+        print(f"Error while configuring logs: {str(e)}")
         traceback.print_exc()
         return False
 
 def remove_all_proxies_refs():
-    """Supprime toutes les références au paramètre 'proxies' dans le code."""
+    """Removes all references to the 'proxies' parameter in the code."""
     files_to_check = [
         "app/llm/collection.py",
         "app/llm/qa.py",
         "app/knowledge/embedding.py"
     ]
     
-    # Créer les répertoires nécessaires s'ils n'existent pas
+    # Create necessary directories if they don't exist
     os.makedirs("app/llm", exist_ok=True)
     os.makedirs("app/knowledge", exist_ok=True)
     
     for file_path in files_to_check:
         if os.path.exists(file_path):
-            # Lire le contenu du fichier
+            # Read the file content
             with open(file_path, 'r') as file:
                 content = file.read()
             
-            # Remplacer toutes les occurrences de 'proxies='
+            # Replace all occurrences of 'proxies='
             modified_content = content.replace("proxies=", "# proxies=")
             
-            # Écrire le contenu modifié
+            # Write the modified content
             with open(file_path, 'w') as file:
                 file.write(modified_content)
             
-            print(f"Fichier {file_path} vérifié et corrigé si nécessaire")
+            print(f"File {file_path} checked and fixed if necessary")
 
 def create_simple_openai_module():
-    """Crée ou met à jour le module simple_client.py."""
-    # Créer le répertoire s'il n'existe pas
+    """Creates or updates the simple_client.py module."""
+    # Create directory if it doesn't exist
     os.makedirs("app/llm", exist_ok=True)
     
     content = '''import os
@@ -90,12 +90,12 @@ from loguru import logger
 
 class SimpleAzureOpenAIClient:
     """
-    Client Azure OpenAI simplifié qui utilise des requêtes REST directes
-    plutôt que la bibliothèque openai qui peut causer des problèmes de compatibilité.
+    Simplified Azure OpenAI client that uses direct REST requests
+    instead of the openai library which can cause compatibility issues.
     """
     
     def __init__(self):
-        """Initialise le client avec les informations d'API depuis les paramètres."""
+        """Initialize the client with API information from settings."""
         self.api_key = settings.AZURE_OPENAI_API_KEY
         self.endpoint = settings.AZURE_OPENAI_ENDPOINT
         self.api_version = settings.AZURE_OPENAI_API_VERSION
@@ -106,16 +106,16 @@ class SimpleAzureOpenAIClient:
     def chat_completions_create(self, model: str, messages: List[Dict[str, str]], 
                                temperature: float = 0.7, max_tokens: int = 800) -> Dict[str, Any]:
         """
-        Envoie une requête de complétion chat à l'API Azure OpenAI.
+        Send a chat completion request to the Azure OpenAI API.
         
         Args:
-            model: Le nom du modèle à utiliser
-            messages: Liste de messages au format [{"role": "...", "content": "..."}]
-            temperature: Température pour la génération (0.0 à 1.0)
-            max_tokens: Nombre maximum de tokens à générer
+            model: The model name to use
+            messages: List of messages in format [{"role": "...", "content": "..."}]
+            temperature: Temperature for generation (0.0 to 1.0)
+            max_tokens: Maximum number of tokens to generate
             
         Returns:
-            Objet de réponse simulant la structure de l'API OpenAI
+            Response object mimicking the OpenAI API structure
         """
         try:
             url = f"{self.endpoint}/openai/deployments/{model}/chat/completions?api-version={self.api_version}"
@@ -131,7 +131,7 @@ class SimpleAzureOpenAIClient:
                 "max_tokens": max_tokens
             }
             
-            # Log la requête (sans les messages pour confidentialité)
+            # Log the request (without messages for confidentiality)
             logger.debug(f"Envoi de requête OpenAI pour modèle: {model} - Temp: {temperature}")
             
             response = requests.post(url, headers=headers, json=data, timeout=30)
@@ -141,7 +141,7 @@ class SimpleAzureOpenAIClient:
                 return response.json()
             else:
                 logger.error(f"Erreur API: HTTP {response.status_code} - {response.text}")
-                # Retourner une structure similaire à l'API OpenAI mais avec un message d'erreur
+                # Return a structure similar to the OpenAI API but with an error message
                 return {
                     "choices": [{
                         "message": {
@@ -166,14 +166,14 @@ class SimpleAzureOpenAIClient:
     
     def embeddings_create(self, model: str, input: str) -> Dict[str, Any]:
         """
-        Crée un embedding pour un texte donné.
+        Create an embedding for a given text.
         
         Args:
-            model: Le nom du modèle d'embedding à utiliser
-            input: Le texte à encoder
+            model: The embedding model name to use
+            input: The text to encode
             
         Returns:
-            Objet de réponse simulant la structure de l'API OpenAI
+            Response object mimicking the OpenAI API structure
         """
         try:
             url = f"{self.endpoint}/openai/deployments/{model}/embeddings?api-version={self.api_version}"
@@ -187,7 +187,7 @@ class SimpleAzureOpenAIClient:
                 "input": input
             }
             
-            # Log la requête (juste la taille du texte pour confidentialité)
+            # Log the request (just the text size for confidentiality)
             logger.debug(f"Création d'embedding avec modèle {model} - Taille du texte: {len(input)} caractères")
             
             response = requests.post(url, headers=headers, json=data, timeout=30)
@@ -197,10 +197,10 @@ class SimpleAzureOpenAIClient:
                 return response.json()
             else:
                 logger.error(f"Erreur API embedding: HTTP {response.status_code} - {response.text}")
-                # Retourner une structure similaire à l'API OpenAI mais avec un vecteur de zéros
+                # Return a structure similar to the OpenAI API but with a zero vector
                 return {
                     "data": [{
-                        "embedding": [0.0] * 1536,  # Dimension standard pour ADA 002
+                        "embedding": [0.0] * 1536,  # Standard dimension for ADA 002
                         "index": 0
                     }],
                     "model": model,
@@ -220,7 +220,7 @@ class SimpleAzureOpenAIClient:
     
     @property
     def chat(self):
-        """Propriété pour simuler la structure d'API OpenAI."""
+        """Property to simulate the OpenAI API structure."""
         return type('ChatObject', (), {
             'completions': type('CompletionsObject', (), {
                 'create': lambda *args, **kwargs: self.chat_completions_create(
@@ -234,7 +234,7 @@ class SimpleAzureOpenAIClient:
     
     @property
     def embeddings(self):
-        """Propriété pour simuler la structure d'API OpenAI."""
+        """Property to simulate the OpenAI API structure."""
         return type('EmbeddingsObject', (), {
             'create': lambda *args, **kwargs: self.embeddings_create(
                 model=kwargs.get('model', self.embedding_model),
@@ -243,7 +243,7 @@ class SimpleAzureOpenAIClient:
         })()
 
 def create_simple_openai_client():
-    """Crée et retourne une instance du client simplifié."""
+    """Creates and returns an instance of the simplified client."""
     return SimpleAzureOpenAIClient()
 '''
     
@@ -253,19 +253,19 @@ def create_simple_openai_client():
     print("Module simple_client.py créé/mis à jour avec succès")
 
 def create_client_module():
-    """Crée ou met à jour le module client.py."""
-    # Créer le répertoire s'il n'existe pas
+    """Creates or updates the client.py module."""
+    # Create directory if it doesn't exist
     os.makedirs("app/llm", exist_ok=True)
     
     content = '''from loguru import logger
 
 def create_openai_client():
     """
-    Crée un client OpenAI compatible avec la version installée.
-    Évite le problème des arguments non supportés.
+    Creates an OpenAI client compatible with the installed version.
+    Avoids the problem of unsupported arguments.
     """
     try:
-        # Importer le client simplifié
+        # Import the simplified client
         from .simple_client import create_simple_openai_client
         logger.info("Utilisation du client OpenAI simplifié")
         return create_simple_openai_client()
@@ -280,17 +280,17 @@ def create_openai_client():
     print("Module client.py créé/mis à jour avec succès")
 
 def create_init_file():
-    """Crée ou met à jour le fichier __init__.py si nécessaire."""
-    # Créer le répertoire s'il n'existe pas
+    """Creates or updates the __init__.py file if necessary."""
+    # Create directory if it doesn't exist
     os.makedirs("app/llm", exist_ok=True)
     
     if not os.path.exists("app/llm/__init__.py"):
         with open("app/llm/__init__.py", 'w') as file:
-            file.write("# Module d'intégration avec les modèles de langage\n")
+            file.write("# Integration module with language models\n")
         print("Fichier app/llm/__init__.py créé")
 
 def kill_running_processes():
-    """Tue les processus existants sur les ports 8000 et 8501."""
+    """Kills existing processes on ports 8000 and 8501."""
     try:
         os.system("kill $(lsof -t -i:8000) 2>/dev/null || true")
         os.system("kill $(lsof -t -i:8501) 2>/dev/null || true")
@@ -299,7 +299,7 @@ def kill_running_processes():
         print("Aucun processus à arrêter")
 
 def clear_logs():
-    """Efface les fichiers de logs existants."""
+    """Clears existing log files."""
     log_files = ["api.log", "ui.log", "streamlit.log"]
     for log_file in log_files:
         if os.path.exists(log_file):
@@ -310,17 +310,17 @@ def clear_logs():
                 print(f"Impossible de supprimer le fichier de log {log_file}")
 
 def create_logger_module():
-    """Crée ou met à jour le module de journalisation."""
-    # S'assurer que le répertoire existe
+    """Creates or updates the logging module."""
+    # Ensure directory exists
     os.makedirs("app/logging", exist_ok=True)
     
-    # Créer le fichier __init__.py s'il n'existe pas
+    # Create __init__.py file if it doesn't exist
     init_path = os.path.join("app", "logging", "__init__.py")
     if not os.path.exists(init_path):
         with open(init_path, 'w') as f:
-            f.write("# Module de journalisation\n")
+            f.write("# Logging module\n")
     
-    # Contenu du module de journalisation
+    # Content of the logging module
     content = '''import os
 import sys
 import json
@@ -328,35 +328,35 @@ from datetime import datetime
 from loguru import logger
 from ..core.config import settings
 
-# Configuration du niveau de log
+# Log level configuration
 LOG_LEVEL = settings.LOG_LEVEL
 
-# Répertoire des logs
+# Logs directory
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "logs")
 api_log_dir = os.path.join(log_dir, "api")
 ui_log_dir = os.path.join(log_dir, "ui")
 
-# Créer les répertoires s'ils n'existent pas
+# Create directories if they don't exist
 os.makedirs(log_dir, exist_ok=True)
 os.makedirs(api_log_dir, exist_ok=True)
 os.makedirs(ui_log_dir, exist_ok=True)
 
-# Fichiers de log avec timestamp pour éviter les écrasements
+# Log files with timestamp to avoid overwriting
 api_log_file = os.path.join(api_log_dir, f"api_{timestamp}.log")
 ui_log_file = os.path.join(ui_log_dir, f"ui_{timestamp}.log")
 debug_log_file = os.path.join(log_dir, f"debug_{timestamp}.log")
 
-# Format personnalisé pour les logs
+# Custom format for logs
 log_format = "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} - {message}"
 
-# Configurer loguru
-logger.remove()  # Supprimer la configuration par défaut
+# Configure loguru
+logger.remove()  # Remove default configuration
 
-# Ajouter la sortie console avec niveau INFO
+# Add console output with INFO level
 logger.add(sys.stderr, level="INFO", format=log_format)
 
-# Ajouter le fichier de log API
+# Add API log file
 logger.add(
     api_log_file,
     rotation="100 MB",
@@ -368,7 +368,7 @@ logger.add(
     encoding="utf8"
 )
 
-# Ajouter le fichier de log UI
+# Add UI log file
 logger.add(
     ui_log_file,
     rotation="100 MB",
@@ -380,7 +380,7 @@ logger.add(
     encoding="utf8"
 )
 
-# Ajouter le fichier de log debug pour TOUS les messages
+# Add debug log file for ALL messages
 logger.add(
     debug_log_file,
     rotation="100 MB",
@@ -391,40 +391,40 @@ logger.add(
     encoding="utf8"
 )
 
-# Fonction pour logger les requêtes API
+# Function to log API requests
 def log_api_request(endpoint: str, request_data: dict, user_id: str = "unknown"):
     """
-    Enregistre les données d'une requête API.
+    Records API request data.
     
     Args:
-        endpoint: Le point de terminaison API appelé
-        request_data: Les données de la requête (sans informations sensibles)
-        user_id: Un identifiant d'utilisateur ou de session (anonyme)
+        endpoint: The API endpoint called
+        request_data: The data of the request (without sensitive information)
+        user_id: A user identifier or session identifier (anonymous)
     """
     try:
-        # Créer une copie des données pour ne pas modifier l'original
+        # Create a copy of the data to not modify the original
         safe_data = request_data.copy() if request_data else {}
         
-        # Masquer ou retirer les informations sensibles
+        # Mask or remove sensitive information
         if isinstance(safe_data, dict):
-            # Si des conversation_history est présent, ne logger que le nombre de messages
+            # If conversation_history is present, log only the number of messages
             if 'conversation_history' in safe_data and isinstance(safe_data['conversation_history'], dict):
                 messages = safe_data['conversation_history'].get('messages', [])
                 safe_data['conversation_history'] = f"[{len(messages)} messages]"
             
-            # Masquer les informations utilisateur sensibles
+            # Mask sensitive user information
             for profile_key in ['user_profile', 'partial_profile']:
                 if profile_key in safe_data and isinstance(safe_data[profile_key], dict):
                     profile = safe_data[profile_key]
                     
-                    # Masquer les identifiants sensibles
+                    # Mask sensitive identifiers
                     for sensitive_field in ['id_number', 'hmo_card_number']:
                         if sensitive_field in profile:
                             value = profile[sensitive_field]
                             if value and len(str(value)) > 4:
                                 profile[sensitive_field] = f"***{str(value)[-4:]}"
         
-        # Enregistrer les données de requête sécurisées
+        # Record safe request data
         log_entry = {
             "type": "api_request",
             "timestamp": datetime.now().isoformat(),
@@ -439,40 +439,40 @@ def log_api_request(endpoint: str, request_data: dict, user_id: str = "unknown")
     except Exception as e:
         logger.error(f"Erreur lors de l'enregistrement de la requête API: {str(e)}")
 
-# Fonction pour logger les réponses API
+# Function to log API responses
 def log_api_response(endpoint: str, status_code: int, response_data: dict, 
                     processing_time: float, user_id: str = "unknown"):
     """
-    Enregistre les données d'une réponse API.
+    Records API response data.
     
     Args:
-        endpoint: Le point de terminaison API appelé
-        status_code: Le code de statut HTTP
-        response_data: Les données de la réponse (sans informations sensibles)
-        processing_time: Le temps de traitement en millisecondes
-        user_id: Un identifiant d'utilisateur ou de session (anonyme)
+        endpoint: The API endpoint called
+        status_code: The HTTP status code
+        response_data: The data of the response (without sensitive information)
+        processing_time: The processing time in milliseconds
+        user_id: A user identifier or session identifier (anonymous)
     """
     try:
-        # Masquer ou simplifier les données de réponse sensibles
+        # Mask or simplify sensitive response data
         safe_data = {}
         
         if response_data:
-            # Copier les métadonnées et statuts si présents
+            # Copy metadata and status if present
             if 'metadata' in response_data:
                 safe_data['metadata'] = response_data['metadata']
             
-            # Ne pas inclure le contenu complet des réponses
+            # Do not include full response content
             if 'response' in response_data:
                 content = response_data['response']
                 safe_data['response_length'] = len(content) if isinstance(content, str) else "non-string"
             
-            # Si un historique de conversation est présent, ne logger que le nombre de messages
+            # If conversation history is present, log only the number of messages
             if 'updated_conversation_history' in response_data:
                 history = response_data['updated_conversation_history']
                 if isinstance(history, dict) and 'messages' in history:
                     safe_data['conversation_messages_count'] = len(history['messages'])
         
-        # Métadonnées de la réponse
+        # Response metadata
         log_entry = {
             "type": "api_response",
             "timestamp": datetime.now().isoformat(),
@@ -486,7 +486,7 @@ def log_api_response(endpoint: str, status_code: int, response_data: dict,
         logger.info(f"API Response | Endpoint: {endpoint} | User: {user_id} | Status: {status_code} | Time: {processing_time:.2f}ms")
         logger.debug(f"API Response Details: {json.dumps(log_entry, ensure_ascii=False)}")
         
-        # Enregistrer séparément les erreurs
+        # Record separate errors
         if status_code >= 400:
             logger.error(f"API Error | Endpoint: {endpoint} | Status: {status_code} | User: {user_id}")
             logger.error(f"Error Details: {json.dumps(safe_data, ensure_ascii=False)}")
@@ -494,19 +494,19 @@ def log_api_response(endpoint: str, status_code: int, response_data: dict,
     except Exception as e:
         logger.error(f"Erreur lors de l'enregistrement de la réponse API: {str(e)}")
 
-# Exporter les fonctions et objets
+# Export functions and objects
 __all__ = ["logger", "log_api_request", "log_api_response"]
 '''
     
-    # Écrire le contenu dans le fichier
+    # Write content to file
     with open("app/logging/logger.py", 'w') as f:
         f.write(content)
     
     print("Module de journalisation créé/mis à jour avec succès")
 
 def create_improved_streamlit_app():
-    """Crée une version améliorée de streamlit_app.py avec initialisation automatique de la conversation."""
-    # Vérifié si improved_streamlit_app.py existe dans le répertoire courant ou dans phase2/
+    """Creates an improved version of streamlit_app.py with automatic conversation initialization."""
+    # Check if improved_streamlit_app.py exists in the current directory or in phase2/
     improved_app_path = "improved_streamlit_app.py"
     phase2_improved_app_path = os.path.join("phase2", "improved_streamlit_app.py")
     
@@ -518,17 +518,17 @@ def create_improved_streamlit_app():
         print("ERREUR: Impossible de trouver le fichier improved_streamlit_app.py")
         return False
     
-    # Créer le répertoire si nécessaire
+    # Create directory if necessary
     os.makedirs("app/ui", exist_ok=True)
     
-    # Copier le fichier improved_streamlit_app.py vers app/ui/streamlit_app.py
+    # Copy improved_streamlit_app.py to app/ui/streamlit_app.py
     shutil.copy(source_path, "app/ui/streamlit_app.py")
     
     print("Interface utilisateur Streamlit améliorée créée/mise à jour avec succès")
     return True
 
 def replace_streamlit_app():
-    """Vérifie si une version de sauvegarde de streamlit_app.py existe."""
+    """Checks if a backup version of streamlit_app.py exists."""
     print("Vérification du fichier streamlit_app.py...")
     
     original_path = "app/ui/streamlit_app.py"
@@ -538,7 +538,7 @@ def replace_streamlit_app():
         return True
     else:
         print(f"ERREUR: Le fichier {original_path} n'existe pas.")
-        # Essayer de le recréer à partir du script d'origine
+        # Try to recreate it from the original script
         try:
             from improved_streamlit_app import get_improved_streamlit_content
             with open(original_path, 'w') as f:
@@ -550,13 +550,13 @@ def replace_streamlit_app():
             return False
 
 def start_app():
-    """Démarre l'application (API et interface utilisateur)."""
+    """Starts the application (API and user interface)."""
     print("\n[3/3] Démarrage de l'application...")
     
-    # Vérifier que le fichier streamlit_app.py existe
+    # Check that streamlit_app.py file exists
     replace_streamlit_app()
     
-    # Créer des sous-processus pour l'API et l'UI
+    # Create subprocesses for API and UI
     try:
         import subprocess
         import threading
@@ -566,12 +566,12 @@ def start_app():
             print("API démarrée!")
         
         def start_ui():
-            # Attendre que l'API soit prête
+            # Wait for the API to be ready
             time.sleep(2)
             subprocess.Popen(["python3", "run_ui.py"], cwd=os.path.dirname(__file__))
             print("Interface utilisateur démarrée!")
             
-        # Démarrer l'API et l'UI dans des threads séparés
+        # Start API and UI in separate threads
         api_thread = threading.Thread(target=start_api)
         ui_thread = threading.Thread(target=start_ui)
         
@@ -583,7 +583,7 @@ def start_app():
         print("- Interface: http://localhost:8501")
         print("\nPour arrêter l'application, utilisez Ctrl+C dans ce terminal.")
         
-        # Attendre que les threads se terminent (ce qui ne devrait pas arriver)
+        # Wait for threads to finish (which should not happen)
         api_thread.join()
         ui_thread.join()
         
@@ -592,7 +592,7 @@ def start_app():
         traceback.print_exc()
 
 def ensure_app_structure():
-    """Crée tous les répertoires nécessaires pour l'application."""
+    """Creates all necessary directories for the application."""
     directories = [
         "app",
         "app/llm",
@@ -610,46 +610,46 @@ def ensure_app_structure():
         os.makedirs(directory, exist_ok=True)
         print(f"Répertoire {directory} vérifié/créé")
     
-    # Vérifier si le fichier config.py existe
+    # Check if config.py file exists
     if not os.path.exists("app/core/config.py"):
         with open("app/core/config.py", 'w') as f:
             f.write('''import os
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
-# Charger les variables d'environnement depuis .env s'il existe
+# Load environment variables from .env if it exists
 load_dotenv()
 
 class Settings(BaseSettings):
-    # Configuration de l'application
+    # Application configuration
     APP_NAME: str = "Medical Services Chatbot"
     API_V1_STR: str = "/api/v1"
     
-    # Paramètres Azure OpenAI
+    # Azure OpenAI parameters
     AZURE_OPENAI_API_KEY: str = os.getenv("AZURE_OPENAI_API_KEY", "")
     AZURE_OPENAI_ENDPOINT: str = os.getenv("AZURE_OPENAI_ENDPOINT", "")
     AZURE_OPENAI_API_VERSION: str = os.getenv("AZURE_OPENAI_API_VERSION", "2023-05-15")
     
-    # Nom des modèles déployés dans Azure
+    # Names of models deployed in Azure
     GPT4O_DEPLOYMENT_NAME: str = os.getenv("GPT4O_DEPLOYMENT_NAME", "gpt-4o")
     GPT4O_MINI_DEPLOYMENT_NAME: str = os.getenv("GPT4O_MINI_DEPLOYMENT_NAME", "gpt-4o-mini")
     EMBEDDING_DEPLOYMENT_NAME: str = os.getenv("EMBEDDING_DEPLOYMENT_NAME", "text-embedding-ada-002")
     
-    # Paramètres Document Intelligence (OCR)
+    # Document Intelligence parameters (OCR)
     DOCUMENT_INTELLIGENCE_KEY: str = os.getenv("DOCUMENT_INTELLIGENCE_KEY", "")
     DOCUMENT_INTELLIGENCE_ENDPOINT: str = os.getenv("DOCUMENT_INTELLIGENCE_ENDPOINT", "")
     
-    # Chemins des fichiers de la base de connaissances
+    # Knowledge base file paths
     KNOWLEDGE_BASE_DIR: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../phase2_data"))
     
-    # Configuration du logging
+    # Logging configuration
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 
 settings = Settings()
 ''')
         print("Fichier app/core/config.py créé")
     
-    # Créer le fichier __init__.py dans chaque dossier s'il n'existe pas
+    # Create __init__.py file in each folder if it doesn't exist
     for directory in directories:
         init_file = os.path.join(directory, "__init__.py")
         if os.path.isdir(directory) and not os.path.exists(init_file):
@@ -657,7 +657,7 @@ settings = Settings()
                 f.write(f"# Module {os.path.basename(directory)}\n")
             print(f"Fichier {init_file} créé")
     
-    # Copier le fichier .env de phase2 vers la racine si nécessaire
+    # Copy .env file from phase2 to root if necessary
     if not os.path.exists(".env") and os.path.exists("phase2/.env"):
         shutil.copy("phase2/.env", ".env")
         print("Fichier .env copié depuis phase2/.env")
@@ -667,31 +667,31 @@ settings = Settings()
 if __name__ == "__main__":
     print("====== Correction finale de l'application Phase 2 ======")
     
-    # Tuer les processus existants
+    # Kill existing processes
     kill_running_processes()
     
-    # S'assurer que la structure de l'application est complète
+    # Ensure the application structure is complete
     ensure_app_structure()
     
-    # Configurer le système de logs
+    # Configure the logging system
     setup_logging()
     
-    # Créer ou mettre à jour le module de journalisation
+    # Create or update the logging module
     create_logger_module()
     
-    # Nettoyer les logs
+    # Clean logs
     clear_logs()
     
-    # Créer ou mettre à jour les modules nécessaires
+    # Create or update necessary modules
     create_init_file()
     create_simple_openai_module()
     create_client_module()
     create_improved_streamlit_app()
     
-    # Supprimer les références à 'proxies'
+    # Remove references to 'proxies'
     remove_all_proxies_refs()
     
-    # Démarrer l'application
+    # Start the application
     start_app()
     
     print("\n====== Correction terminée avec succès! ======")

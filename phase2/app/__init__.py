@@ -1,4 +1,4 @@
-# Module d'initialisation de l'application
+# Application initialization module
 from .logging.logger import logger
 
 logger.info("Initialisation de l'application phase2") 

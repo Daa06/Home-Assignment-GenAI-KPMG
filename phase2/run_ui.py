@@ -4,28 +4,28 @@ import subprocess
 import sys
 from dotenv import load_dotenv
 
-# Charger les variables d'environnement
+# Load environment variables
 load_dotenv()
 
-# Configuration de Streamlit
+# Streamlit configuration
 PORT = int(os.getenv("UI_PORT", "8501"))
 HOST = os.getenv("UI_HOST", "0.0.0.0")
 
 if __name__ == "__main__":
-    # Chemin vers l'application Streamlit
+    # Path to the Streamlit application
     streamlit_app_path = os.path.join(os.path.dirname(__file__), "app", "ui", "streamlit_app.py")
     
-    # Vérifier que le fichier existe
+    # Check if the file exists
     if not os.path.exists(streamlit_app_path):
-        print(f"Erreur: Le fichier {streamlit_app_path} n'existe pas")
+        print(f"Error: The file {streamlit_app_path} does not exist")
         sys.exit(1)
     
-    print(f"Démarrage de l'interface utilisateur Streamlit sur {HOST}:{PORT}")
+    print(f"Starting the Streamlit UI on {HOST}:{PORT}")
     
-    # Chemin complet vers l'exécutable streamlit
+    # Full path to the streamlit executable
     streamlit_path = os.path.expanduser("~/Library/Python/3.9/bin/streamlit")
     
-    # Lancer Streamlit avec les paramètres
+    # Launch Streamlit with parameters
     cmd = [
         streamlit_path, "run", 
         streamlit_app_path,
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     try:
         subprocess.run(cmd)
     except KeyboardInterrupt:
-        print("Arrêt de l'application Streamlit...")
+        print("Stopping the Streamlit application...")
     except Exception as e:
-        print(f"Erreur lors du démarrage de Streamlit: {str(e)}")
+        print(f"Error starting Streamlit: {str(e)}")
         sys.exit(1) 

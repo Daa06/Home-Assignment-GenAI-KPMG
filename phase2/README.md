@@ -1,130 +1,281 @@
-# Phase 2: Chatbot Medical Services Q&A
+# Chatbot Phase 2: Medical Services Information System
 
-## Description
-Cette application est un chatbot basé sur l'intelligence artificielle qui fournit des informations sur les services médicaux des caisses maladie israéliennes (Maccabi, Meuhedet et Clalit). Le système est capable de comprendre l'hébreu et l'anglais et adapte ses réponses en fonction du profil spécifique de l'utilisateur.
+## Project Description
 
-## Architecture
-L'application suit une architecture microservice stateless :
-- **Backend**: Une API REST développée avec FastAPI
-- **Frontend**: Une interface utilisateur développée avec Streamlit
-- **AI**: Utilisation d'Azure OpenAI (GPT-4o et ADA 002 pour les embeddings)
-- **Base de connaissances**: Fichiers HTML traités et indexés pour une recherche vectorielle
+This project is an advanced medical chatbot system designed to provide information about medical services offered by various Israeli health insurance providers (Maccabi, Meuhedet, and Clalit). The system uses artificial intelligence to understand user questions and provide accurate, personalized information about available services based on the user's specific profile.
 
-## Prérequis
-- Python 3.8 ou supérieur
-- Pip (gestionnaire de paquets Python)
-- Accès aux services Azure OpenAI
+## Key Features
 
-## Installation
+- **Intuitive conversational interface**: Simple and user-friendly Streamlit interface
+- **Bilingual system**: Support for Hebrew and English
+- **Response personalization**: Adaptation of responses based on the user's health insurance provider and coverage level
+- **Contextual search**: Vector search to find the most relevant information
+- **Stateless architecture**: Robust and scalable design
+- **Knowledge base processing**: Efficient indexing and storage of medical information
+- **Two-phase dialogue**: User information collection followed by personalized Q&A
+- **Data privacy**: All user data stored client-side only
 
-1. Cloner le dépôt (si ce n'est pas déjà fait)
-2. Naviguer vers le répertoire du projet:
-```bash
-cd phase2
-```
+## Technical Architecture
 
-3. Installer les dépendances:
-```bash
-pip install -r requirements.txt
-```
+The application is designed using a microservices architecture comprising:
 
-4. Créer un fichier `.env` à la racine du répertoire `phase2` avec vos informations d'authentification Azure:
+1. **Backend API (FastAPI)**:
+   - Processing requests from the user interface
+   - Communication with the language model
+   - Searching for information in the knowledge base
+
+2. **User Interface (Streamlit)**:
+   - Conversational interface
+   - Session state management
+   - User information collection
+   - Response display
+
+3. **Artificial Intelligence Components**:
+   - Azure OpenAI (GPT-4o) for understanding and generating responses
+   - Embeddings (ADA 002) for vector search
+   - Response personalization logic
+
+4. **Knowledge Base**:
+   - HTML document indexing
+   - Semantic search via FAISS
+   - Efficient metadata storage
+
+## Prerequisites
+
+- Python 3.8 or higher
+- Bash (to run the installation script)
+- Internet access to download dependencies
+- API keys for Azure OpenAI
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file at the root of the `phase2` directory with the following information:
+
 ```
 # Azure OpenAI
-AZURE_OPENAI_API_KEY=votre_clé_api
-AZURE_OPENAI_ENDPOINT=votre_endpoint
+AZURE_OPENAI_API_KEY=your_api_key
+AZURE_OPENAI_ENDPOINT=your_endpoint
 AZURE_OPENAI_API_VERSION=2023-05-15
 
-# Noms des déploiements Azure
+# Azure Deployment Names
 GPT4O_DEPLOYMENT_NAME=gpt-4o
 GPT4O_MINI_DEPLOYMENT_NAME=gpt-4o-mini
 EMBEDDING_DEPLOYMENT_NAME=text-embedding-ada-002
 
-# Configuration serveur (optionnel)
+# Server Configuration (optional)
 API_HOST=0.0.0.0
 API_PORT=8000
 API_RELOAD=False
 UI_HOST=0.0.0.0
 UI_PORT=8501
 
-# Niveau de log
+# Log Level
 LOG_LEVEL=INFO
 ```
 
-## Démarrage de l'application
+## Installation and Execution
 
-1. Lancer l'API backend:
+### Simple Method (Recommended)
+
+Use the `chatbot_phase2.sh` script which automates the entire installation and startup process:
+
 ```bash
-python run_api.py
+# Make the script executable
+chmod +x chatbot_phase2.sh
+
+# Run the script
+./chatbot_phase2.sh
 ```
 
-2. Dans un nouveau terminal, lancer l'interface utilisateur Streamlit:
+The script automatically performs the following actions:
+1. Checking Python and pip installation
+2. Installing all required dependencies
+3. Generating the knowledge index
+4. Starting the API and user interface
+
+#### Script Options
+
+- Virtual environment mode: `./chatbot_phase2.sh -v` or `./chatbot_phase2.sh --venv`
+
+### Manual Installation
+
+If you prefer a manual installation:
+
+1. Install dependencies:
 ```bash
-python run_ui.py
+pip install -r requirements.txt
 ```
 
-3. Accéder à l'interface utilisateur dans votre navigateur à l'adresse:
+2. Generate the knowledge index:
+```bash
+python rebuild_index_complete.py
 ```
-http://localhost:8501
+
+3. Start the application:
+```bash
+python fix_app_final.py
 ```
 
-## Utilisation
-
-L'application comporte deux phases principales:
-
-### Phase 1: Collecte d'informations utilisateur
-- L'application vous guidera à travers un dialogue conversationnel pour collecter vos informations personnelles
-- Vous devrez fournir: nom, prénom, numéro d'ID, genre, âge, caisse maladie, numéro de carte et niveau d'assurance
-- Une fois toutes les informations collectées, un résumé vous sera présenté pour confirmation
-
-### Phase 2: Questions-Réponses
-- Après avoir complété votre profil, vous pouvez passer au mode Q&A
-- Posez des questions sur les services médicaux de votre caisse maladie
-- Le système fournira des réponses personnalisées basées sur votre profil
-
-## Confidentialité des données
-
-- Toutes les données utilisateur sont conservées exclusivement côté client (dans votre navigateur)
-- Aucune information personnelle n'est stockée sur le serveur
-- Vous pouvez réinitialiser toutes vos données à tout moment via le bouton "Réinitialiser"
-
-## Fonctionnalités clés
-
-- Support multilingue (hébreu et anglais)
-- Réponses personnalisées basées sur la caisse maladie et le niveau d'assurance
-- Interface adaptative qui s'ajuste automatiquement à la direction du texte
-- Architecture sans état pour une haute disponibilité et scalabilité
-- Recherche sémantique dans la base de connaissances
-
-## Structure du code
+## Project Structure
 
 ```
 phase2/
-├── app/
-│   ├── api/            # Endpoints FastAPI
-│   ├── core/           # Configuration
-│   ├── knowledge/      # Gestion de la base de connaissances
-│   ├── llm/            # Interaction avec Azure OpenAI
-│   ├── logging/        # Configuration des logs
-│   └── ui/             # Interface Streamlit
-├── logs/               # Fichiers de logs (créés automatiquement)
-├── .env                # Variables d'environnement (à créer)
-├── README.md           # Ce fichier
-├── requirements.txt    # Dépendances
-├── run_api.py          # Script pour démarrer l'API
-└── run_ui.py           # Script pour démarrer l'UI
+├── app/                       # Main code directory
+│   ├── api/                   # FastAPI API
+│   │   ├── __init__.py
+│   │   ├── endpoints.py       # API endpoints
+│   │   └── main.py            # Main FastAPI application
+│   ├── core/                  # Central configuration
+│   │   ├── __init__.py
+│   │   └── config.py          # Configuration management
+│   ├── knowledge/             # Knowledge base management
+│   │   ├── __init__.py
+│   │   ├── processor.py       # HTML file processing
+│   │   ├── embedding.py       # Embedding creation
+│   │   └── knowledge_faiss.index # Vector index (generated)
+│   ├── llm/                   # Language model integration
+│   │   ├── __init__.py
+│   │   ├── client.py          # OpenAI client
+│   │   ├── simple_client.py   # Simplified OpenAI client
+│   │   ├── collection.py      # Prompt collection
+│   │   └── qa.py              # Q&A logic
+│   ├── logging/               # Log configuration
+│   │   ├── __init__.py
+│   │   └── logger.py          # Logger configuration
+│   ├── ui/                    # User interface
+│   │   ├── __init__.py
+│   │   └── streamlit_app.py   # Streamlit application
+│   └── __init__.py            # Package initialization
+├── logs/                      # Log files (generated)
+│   ├── api/                   # API logs
+│   └── ui/                    # UI logs
+├── phase2_data/               # Source data for knowledge base
+├── .env                       # Environment variables (to be created)
+├── .gitignore                 # Files to ignore for git
+├── chatbot_phase2.sh          # Installation and startup script
+├── fix_app_final.py           # Application correction script
+├── rebuild_index_complete.py  # Index generation script
+├── requirements.txt           # Python dependencies
+├── run_api.py                 # API startup script
+└── run_ui.py                  # UI startup script
 ```
 
-## Dépannage
+## Detailed Operation
 
-1. **Problème de connexion à l'API:**
-   - Vérifiez que l'API est bien en cours d'exécution (`python run_api.py`)
-   - Vérifiez que les ports ne sont pas bloqués par un pare-feu
+### 1. Initialization and Configuration
 
-2. **Erreurs liées à Azure OpenAI:**
-   - Vérifiez vos clés API et endpoints dans le fichier `.env`
-   - Assurez-vous que les modèles spécifiés sont bien déployés dans votre ressource Azure
+The system begins by loading environment variables and configuring necessary components, including:
+- Logger configuration
+- Directory structure verification
+- API client initialization
 
-3. **Problèmes avec l'interface utilisateur:**
-   - Effacez le cache du navigateur
-   - Essayez de réinitialiser la session via le bouton "Réinitialiser" 
+### 2. Knowledge Index Generation
+
+The knowledge base is processed by:
+1. Reading HTML files in the `phase2_data` directory
+2. Extracting relevant content
+3. Breaking down into informative fragments
+4. Generating vector embeddings for each fragment
+5. Creating a FAISS index for efficient searching
+6. Storing associated metadata
+
+### 3. User Interface
+
+The Streamlit interface manages:
+- User information collection
+- Field validation
+- Conversation state management
+- Sending requests to the API
+- Displaying formatted responses
+
+### 4. Question Processing
+
+When a user asks a question:
+1. The question is sent to the API
+2. The system searches for relevant fragments in the knowledge base
+3. Fragments are extracted with their metadata
+4. The GPT-4o model receives the context and question
+5. A personalized response is generated taking into account the user's profile
+6. The response is returned to the user interface
+
+## Response Personalization
+
+The system adapts its responses based on:
+- The user's health insurance provider (Maccabi, Meuhedet, Clalit)
+- Insurance coverage level (standard, silver, gold, platinum)
+- Type of medical service being searched for
+- Language used to ask the question
+
+## Development and Extension
+
+### Adding New Data Sources
+
+To add new sources to the knowledge base:
+1. Add HTML files to the `phase2_data` directory
+2. Run `python rebuild_index_complete.py` to rebuild the index
+
+### Modifying Prompts
+
+System prompts are defined in `app/llm/collection.py` and can be customized as needed.
+
+### Adding Features
+
+The code is modular and allows easy addition of:
+- New API endpoints in `app/api/endpoints.py`
+- UI features in `app/ui/streamlit_app.py`
+- Processing capabilities in `app/knowledge/processor.py`
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Azure OpenAI connection error**:
+   - Check API keys and endpoints in `.env`
+   - Ensure models are correctly deployed
+
+2. **API won't start**:
+   - Check logs in `logs/api/`
+   - Make sure no other service is using port 8000
+
+3. **Interface not connecting to API**:
+   - Verify that the API is running
+   - Check connection parameters in `.env`
+
+4. **Errors during index generation**:
+   - Check Azure OpenAI access
+   - Verify that data files are in the correct format
+
+### Logs
+
+System logs are stored in:
+- API logs: `logs/api/`
+- UI logs: `logs/ui/`
+
+## Performance and Optimizations
+
+- FAISS index is optimized for fast searches even with large knowledge bases
+- Client-side caching reduces server requests
+- Asynchronous communication between API and interface improves responsiveness
+
+## Security
+
+- No personal information is stored on the server
+- All communications with Azure use secure connections
+- User information is kept only in the browser session
+
+## Future Improvements
+
+Several aspects of the system could be enhanced in the future:
+
+- **User Interface**: More modern and responsive design with accessibility features
+- **Multilingual Support**: Extension to other languages common in Israel
+- **Integration**: Public API for integration with other healthcare systems
+- **Knowledge Base**: Live connectors to health insurance databases and automated updates
+- **Analytics**: Administrative dashboard for frequently asked questions and usage patterns
+- **Performance**: Optimizations for handling large numbers of simultaneous users
+
+## Authors and License
+
+© 2025 - Project developed for KPMG as part of a technical evaluation. 

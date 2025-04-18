@@ -7,12 +7,12 @@ from loguru import logger
 
 class SimpleAzureOpenAIClient:
     """
-    Client Azure OpenAI simplifié qui utilise des requêtes REST directes
-    plutôt que la bibliothèque openai qui peut causer des problèmes de compatibilité.
+    Simplified Azure OpenAI client that uses direct REST requests
+    instead of the openai library which can cause compatibility issues.
     """
     
     def __init__(self):
-        """Initialise le client avec les informations d'API depuis les paramètres."""
+        """Initialize the client with API information from settings."""
         self.api_key = settings.AZURE_OPENAI_API_KEY
         self.endpoint = settings.AZURE_OPENAI_ENDPOINT
         self.api_version = settings.AZURE_OPENAI_API_VERSION
@@ -23,16 +23,16 @@ class SimpleAzureOpenAIClient:
     def chat_completions_create(self, model: str, messages: List[Dict[str, str]], 
                                temperature: float = 0.7, max_tokens: int = 800) -> Dict[str, Any]:
         """
-        Envoie une requête de complétion chat à l'API Azure OpenAI.
+        Send a chat completion request to the Azure OpenAI API.
         
         Args:
-            model: Le nom du modèle à utiliser
-            messages: Liste de messages au format [{"role": "...", "content": "..."}]
-            temperature: Température pour la génération (0.0 à 1.0)
-            max_tokens: Nombre maximum de tokens à générer
+            model: The model name to use
+            messages: List of messages in format [{"role": "...", "content": "..."}]
+            temperature: Temperature for generation (0.0 to 1.0)
+            max_tokens: Maximum number of tokens to generate
             
         Returns:
-            Objet de réponse simulant la structure de l'API OpenAI
+            Response object mimicking the OpenAI API structure
         """
         try:
             url = f"{self.endpoint}/openai/deployments/{model}/chat/completions?api-version={self.api_version}"
@@ -48,7 +48,7 @@ class SimpleAzureOpenAIClient:
                 "max_tokens": max_tokens
             }
             
-            # Log la requête (sans les messages pour confidentialité)
+            # Log the request (without messages for confidentiality)
             logger.debug(f"Envoi de requête OpenAI pour modèle: {model} - Temp: {temperature}")
             
             response = requests.post(url, headers=headers, json=data, timeout=30)
@@ -58,7 +58,7 @@ class SimpleAzureOpenAIClient:
                 return response.json()
             else:
                 logger.error(f"Erreur API: HTTP {response.status_code} - {response.text}")
-                # Retourner une structure similaire à l'API OpenAI mais avec un message d'erreur
+                # Return a structure similar to the OpenAI API but with an error message
                 return {
                     "choices": [{
                         "message": {
@@ -83,14 +83,14 @@ class SimpleAzureOpenAIClient:
     
     def embeddings_create(self, model: str, input: str) -> Dict[str, Any]:
         """
-        Crée un embedding pour un texte donné.
+        Create an embedding for a given text.
         
         Args:
-            model: Le nom du modèle d'embedding à utiliser
-            input: Le texte à encoder
+            model: The embedding model name to use
+            input: The text to encode
             
         Returns:
-            Objet de réponse simulant la structure de l'API OpenAI
+            Response object mimicking the OpenAI API structure
         """
         try:
             url = f"{self.endpoint}/openai/deployments/{model}/embeddings?api-version={self.api_version}"
@@ -104,7 +104,7 @@ class SimpleAzureOpenAIClient:
                 "input": input
             }
             
-            # Log la requête (juste la taille du texte pour confidentialité)
+            # Log the request (just the text size for confidentiality)
             logger.debug(f"Création d'embedding avec modèle {model} - Taille du texte: {len(input)} caractères")
             
             response = requests.post(url, headers=headers, json=data, timeout=30)
@@ -114,10 +114,10 @@ class SimpleAzureOpenAIClient:
                 return response.json()
             else:
                 logger.error(f"Erreur API embedding: HTTP {response.status_code} - {response.text}")
-                # Retourner une structure similaire à l'API OpenAI mais avec un vecteur de zéros
+                # Return a structure similar to the OpenAI API but with a zero vector
                 return {
                     "data": [{
-                        "embedding": [0.0] * 1536,  # Dimension standard pour ADA 002
+                        "embedding": [0.0] * 1536,  # Standard dimension for ADA 002
                         "index": 0
                     }],
                     "model": model,
@@ -137,7 +137,7 @@ class SimpleAzureOpenAIClient:
     
     @property
     def chat(self):
-        """Propriété pour simuler la structure d'API OpenAI."""
+        """Property to simulate the OpenAI API structure."""
         return type('ChatObject', (), {
             'completions': type('CompletionsObject', (), {
                 'create': lambda *args, **kwargs: self.chat_completions_create(
@@ -151,7 +151,7 @@ class SimpleAzureOpenAIClient:
     
     @property
     def embeddings(self):
-        """Propriété pour simuler la structure d'API OpenAI."""
+        """Property to simulate the OpenAI API structure."""
         return type('EmbeddingsObject', (), {
             'create': lambda *args, **kwargs: self.embeddings_create(
                 model=kwargs.get('model', self.embedding_model),
@@ -160,5 +160,5 @@ class SimpleAzureOpenAIClient:
         })()
 
 def create_simple_openai_client():
-    """Crée et retourne une instance du client simplifié."""
+    """Creates and returns an instance of the simplified client."""
     return SimpleAzureOpenAIClient()

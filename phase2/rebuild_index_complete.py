@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Script pour reconstruire l'index vectoriel avec FAISS et générer un fichier
-JSON qui documente les embeddings avec toutes les métadonnées importantes.
+Script to rebuild the vector index with FAISS and generate a JSON file
+that documents the embeddings with all important metadata.
 """
 
 import os
@@ -11,10 +11,10 @@ import json
 import numpy as np
 from loguru import logger
 
-# Ajouter le répertoire courant au path
+# Add current directory to path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-# Vérifier si FAISS est disponible
+# Check if FAISS is available
 try:
     import faiss
     FAISS_AVAILABLE = True
@@ -29,7 +29,7 @@ from app.llm.client import create_openai_client
 from app.core.config import settings
 
 def create_embedding(client, text, model=settings.EMBEDDING_DEPLOYMENT_NAME):
-    """Crée un embedding pour un texte donné"""
+    """Creates an embedding for a given text"""
     try:
         response = client.embeddings.create(
             model=model,
@@ -45,12 +45,12 @@ def create_embedding(client, text, model=settings.EMBEDDING_DEPLOYMENT_NAME):
         return np.zeros(1536).tolist()  # Fallback en cas d'erreur
 
 def rebuild_knowledge_index():
-    """Reconstruit l'index de connaissances avec FAISS et toutes les métadonnées importantes."""
+    """Rebuilds the knowledge index with FAISS and all important metadata."""
     start_time = time.time()
     
     logger.info("Démarrage de la reconstruction de l'index de connaissances avec FAISS...")
     
-    # Créer les chemins des fichiers
+    # Create file paths
     base_dir = os.path.dirname(__file__)
     index_dir = os.path.join(base_dir, "app/knowledge")
     index_file = os.path.join(index_dir, "knowledge_index.json")
@@ -58,16 +58,16 @@ def rebuild_knowledge_index():
     faiss_index_file = os.path.join(index_dir, "knowledge_faiss.index")
     embedding_metadata_file = os.path.join(index_dir, "embedding_metadata.json")
     
-    # Supprimer les fichiers d'index existants
+    # Delete existing index files
     for file_path in [index_file, embedding_file, faiss_index_file, embedding_metadata_file]:
         if os.path.exists(file_path):
             logger.info(f"Suppression du fichier existant: {file_path}")
             os.remove(file_path)
     
-    # Initialiser le client OpenAI
+    # Initialize OpenAI client
     client = create_openai_client()
     
-    # Traiter les documents et extraire les connaissances
+    # Process documents and extract knowledge
     processor = KnowledgeProcessor()
     knowledge_items = processor.process_all_knowledge_base()
     
@@ -77,19 +77,19 @@ def rebuild_knowledge_index():
     
     logger.info(f"Extraction réussie de {len(knowledge_items)} éléments de connaissance")
     
-    # Découper les documents en chunks
+    # Split documents into chunks
     all_chunks = []
     service_types = set()
     hmo_names = set()
     insurance_tiers = set()
     
-    # Fonction pour découper un document en fragments
+    # Function to split a document into chunks
     def chunk_document(document):
         chunks = []
         service_type = document.get('service_type', '')
         service_types.add(service_type)
         
-        # Ajouter le titre et l'introduction comme un fragment
+        # Add title and introduction as a chunk
         intro_text = document.get('title', '') + "\n"
         for para in document.get('introduction', []):
             intro_text += para + "\n"
@@ -106,31 +106,31 @@ def rebuild_knowledge_index():
                 }
             })
         
-        # Ajouter chaque ligne de table comme un fragment séparé
+        # Add each table row as a separate chunk
         for table_idx, table in enumerate(document.get('tables', [])):
             headers = table.get('headers', [])
             
             for row_idx, row in enumerate(table.get('data', [])):
-                if len(row) >= 2:  # Au moins le nom du service et une colonne HMO
+                if len(row) >= 2:  # At least service name and one HMO column
                     service_name = row[0]
                     
-                    # Créer un fragment pour chaque colonne HMO
+                    # Create a chunk for each HMO column
                     for i in range(1, min(len(row), len(headers))):
                         hmo_name = headers[i]
-                        hmo_names.add(hmo_name)  # Ajouter à l'ensemble des HMO
+                        hmo_names.add(hmo_name)  # Add to the set of HMOs
                         hmo_data = row[i]
                         
-                        # Essayer d'extraire le niveau d'assurance à partir du texte
+                        # Try to extract insurance tier from text
                         insurance_tier = None
                         for tier in ["זהב", "כסף", "ארד"]:  # Gold, Silver, Bronze
                             if tier in hmo_data:
                                 insurance_tier = tier
-                                insurance_tiers.add(tier)  # Ajouter à l'ensemble des niveaux d'assurance
+                                insurance_tiers.add(tier)  # Add to the set of insurance tiers
                                 break
                         
                         chunk_text = f"Service: {service_name}\nHMO: {hmo_name}\nDétails: {hmo_data}"
                         
-                        # Enrichir le texte avec des mots-clés en anglais pour améliorer la recherche
+                        # Enrich text with English keywords to improve search
                         if service_type == "pragrency_services":
                             chunk_text += "\nKeywords: pregnancy, prenatal, birth, maternity, pregnant"
                         elif service_type == "dentel_services":
@@ -158,7 +158,7 @@ def rebuild_knowledge_index():
                             }
                         })
         
-        # Ajouter les informations de contact comme un fragment
+        # Add contact information as a chunk
         contact_info = document.get('contact_info', {})
         if contact_info:
             contact_text = "Informations de contact:\n"
@@ -178,12 +178,12 @@ def rebuild_knowledge_index():
         
         return chunks
     
-    # Découper tous les documents en fragments
+    # Split all documents into chunks
     for item in knowledge_items:
         chunks = chunk_document(item)
         all_chunks.extend(chunks)
     
-    # Mélanger les chunks pour éviter tout biais lié à l'ordre
+    # Shuffle chunks to avoid bias related to order
     import random
     random.shuffle(all_chunks)
     
@@ -192,7 +192,7 @@ def rebuild_knowledge_index():
     logger.info(f"HMO trouvés: {hmo_names}")
     logger.info(f"Niveaux d'assurance trouvés: {insurance_tiers}")
     
-    # Créer des embeddings pour tous les fragments
+    # Create embeddings for all chunks
     embeddings_list = []
     embedding_metadata = []
     
@@ -201,7 +201,7 @@ def rebuild_knowledge_index():
         embedding = create_embedding(client, chunk['text'])
         embeddings_list.append(embedding)
         
-        # Ajouter les métadonnées de l'embedding
+        # Add embedding metadata
         embedding_metadata.append({
             'index': i,
             'text_preview': chunk['text'][:100] + '...' if len(chunk['text']) > 100 else chunk['text'],
@@ -212,32 +212,32 @@ def rebuild_knowledge_index():
             'embedding_dimension': len(embedding)
         })
     
-    # Convertir en tableau NumPy
+    # Convert to NumPy array
     embeddings_array = np.array(embeddings_list).astype('float32')
     
-    # Vérifier la dimension des embeddings
+    # Check embedding dimension
     dimension = embeddings_array.shape[1]
     logger.info(f"Dimension des embeddings: {dimension}")
     
-    # Créer l'index FAISS
+    # Create FAISS index
     index = faiss.IndexFlatL2(dimension)
     index.add(embeddings_array)
     logger.info(f"Index FAISS créé avec succès avec {index.ntotal} vecteurs")
     
-    # Sauvegarder l'index FAISS
+    # Save FAISS index
     faiss.write_index(index, faiss_index_file)
     logger.info(f"Index FAISS sauvegardé: {faiss_index_file}")
     
-    # Sauvegarder les documents et les embeddings sur disque
+    # Save documents and embeddings to disk
     with open(index_file, 'w', encoding='utf-8') as f:
         json.dump(all_chunks, f, ensure_ascii=False, indent=2)
     logger.info(f"Index des documents sauvegardé: {index_file}")
     
-    # Sauvegarder les embeddings au format numpy
+    # Save embeddings in numpy format
     np.save(embedding_file, embeddings_array)
     logger.info(f"Embeddings sauvegardés: {embedding_file}")
     
-    # Sauvegarder les métadonnées des embeddings
+    # Save embedding metadata
     with open(embedding_metadata_file, 'w', encoding='utf-8') as f:
         json.dump({
             'total_embeddings': len(embedding_metadata),
@@ -256,12 +256,12 @@ def rebuild_knowledge_index():
     return True
 
 if __name__ == "__main__":
-    # Configurer le logger
+    # Configure logger
     logger.remove()
     logger.add(sys.stderr, level="INFO")
     logger.add("rebuild_index_complete.log", rotation="10 MB", level="DEBUG")
     
-    # Exécuter la reconstruction de l'index
+    # Run index reconstruction
     if rebuild_knowledge_index():
         logger.info("Index reconstruit avec succès!")
         sys.exit(0)

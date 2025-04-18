@@ -4,9 +4,9 @@
   "service_types": [
     "communication_clinic_services",
     "dentel_services",
-    "alternative_services",
-    "optometry_services",
     "workshops_services",
+    "optometry_services",
+    "alternative_services",
     "pragrency_services"
   ],
   "hmo_names": [
@@ -17,19 +17,10 @@
   "insurance_tiers": [
     "זהב"
   ],
-  "created_at": "2025-04-18 15:46:45",
+  "created_at": "2025-04-18 19:20:54",
   "embeddings": [
     {
       "index": 0,
-      "text_preview": "Service: טיפול בילדים\nHMO: מכבי\nDétails: זהב: חינם עד גיל 18, כולל טיפולי עין עצלה\nכסף: חינם עד גיל ...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 1,
       "text_preview": "Service: קורס הכנה ללידה\nHMO: כללית\nDétails: זהב: חינם, כולל מפגש עם יועצת הנקה\nכסף: 70% הנחה\nארד: 4...",
       "service_type": "pragrency_services",
       "chunk_type": "table",
@@ -38,430 +29,7 @@
       "embedding_dimension": 1536
     },
     {
-      "index": 2,
-      "text_preview": "Service: הריון ולידה\nHMO: כללית\nDétails: זהב: חינם, כולל סדנת עיסוי תינוקות\nכסף: 75% הנחה\nארד: 45% ה...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 3,
-      "text_preview": "Informations de contact:\nמכבי: 3555* או 1-700-50-53-53 שלוחה 13\nמאוחדת: 3833* או 1-222-3833 שלוחה 14...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "contact",
-      "hmo_name": null,
-      "insurance_tier": null,
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 4,
-      "text_preview": "Service: רפלקסולוגיה\nHMO: מכבי\nDétails: זהב: 60% הנחה, עד 12 טיפולים בשנה\nכסף: 40% הנחה, עד 8 טיפולי...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 5,
-      "text_preview": "Service: טיפולי שורש\nHMO: מכבי\nDétails: זהב: 70% הנחה, כולל צילומי רנטגן\nכסף: 40% הנחה\nארד: 15% הנחה...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 6,
-      "text_preview": "Service: טיפולים קוסמטיים\nHMO: מאוחדת\nDétails: זהב: 35% הנחה, כולל ציפויים\nכסף: 20% הנחה\nארד: ללא הנ...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 7,
-      "text_preview": "Service: פעילות גופנית\nHMO: מאוחדת\nDétails: זהב: חינם, כולל 5 אימונים אישיים\nכסף: 55% הנחה, 2 אימוני...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 8,
-      "text_preview": "Service: סוכרת\nHMO: מאוחדת\nDétails: זהב: חינם, כולל ליווי אישי של אחות סוכרת\nכסף: 70% הנחה\nארד: 45% ...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 9,
-      "text_preview": "רפואה משלימה (רפואה אלטרנטיבית)\nרפואה משלימה, הידועה גם כרפואה אלטרנטיבית, מתייחסת למגוון שיטות טיפו...",
-      "service_type": "alternative_services",
-      "chunk_type": "introduction",
-      "hmo_name": null,
-      "insurance_tier": null,
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 10,
-      "text_preview": "Service: אבחון וטיפול בהפרעות בליעה\nHMO: מאוחדת\nDétails: זהב: 80% הנחה, כולל ייעוץ תזונתי\nכסף: 60% ה...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 11,
-      "text_preview": "Service: עדשות מגע\nHMO: מכבי\nDétails: זהב: 60% הנחה, כולל ערכת טיפול שנתית\nכסף: 40% הנחה\nארד: 20% הנ...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 12,
-      "text_preview": "Service: סתימות\nHMO: מאוחדת\nDétails: זהב: 75% הנחה, חומרים פרימיום\nכסף: 45% הנחה\nארד: 15% הנחה\nKeywo...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 13,
-      "text_preview": "Service: אבחון וטיפול בהפרעות בליעה\nHMO: מכבי\nDétails: זהב: 85% הנחה, כולל בדיקת וידאופלורוסקופיה\nכס...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 14,
-      "text_preview": "Service: שיאצו\nHMO: כללית\nDétails: זהב: 75% הנחה, עד 14 טיפולים בשנה\nכסף: 55% הנחה, עד 9 טיפולים בשנ...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 15,
-      "text_preview": "Service: בדיקות ראייה\nHMO: כללית\nDétails: זהב: חינם כל חצי שנה, כולל בדיקת שדה ראייה\nכסף: חינם פעם ב...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 16,
-      "text_preview": "Service: בדיקות סקר גנטיות\nHMO: מאוחדת\nDétails: זהב: 85% הנחה, כולל בדיקות מתקדמות\nכסף: 65% הנחה\nארד...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 17,
-      "text_preview": "Service: טיפולים לתיקון ראייה\nHMO: כללית\nDétails: זהב: 55% הנחה על ניתוח לייזר, כולל אחריות ל-5 שנים...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 18,
-      "text_preview": "Service: שיאצו\nHMO: מאוחדת\nDétails: זהב: 70% הנחה, עד 12 טיפולים בשנה\nכסף: 50% הנחה, עד 8 טיפולים בש...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 19,
-      "text_preview": "Service: רפלקסולוגיה\nHMO: מאוחדת\nDétails: זהב: 65% הנחה, עד 10 טיפולים בשנה\nכסף: 45% הנחה, עד 7 טיפו...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 20,
-      "text_preview": "Service: קורס הכנה ללידה\nHMO: מאוחדת\nDétails: זהב: חינם, כולל קורס החייאת תינוקות\nכסף: 60% הנחה\nארד:...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 21,
-      "text_preview": "Service: כירופרקטיקה\nHMO: כללית\nDétails: זהב: 85% הנחה, עד 14 טיפולים בשנה\nכסף: 65% הנחה, עד 9 טיפול...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 22,
-      "text_preview": "Service: טיפול בעיכוב התפתחותי\nHMO: כללית\nDétails: זהב: 95% הנחה, עד 45 טיפולים בשנה\nכסף: 75% הנחה, ...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 23,
-      "text_preview": "Service: נטורופתיה\nHMO: מכבי\nDétails: זהב: 70% הנחה, עד 16 טיפולים בשנה\nכסף: 50% הנחה, עד 10 טיפולים...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 24,
-      "text_preview": "Service: טיפולים קוסמטיים\nHMO: כללית\nDétails: זהב: 30% הנחה, כולל שיחזור חרסינה\nכסף: 15% הנחה\nארד: 2...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 25,
-      "text_preview": "Service: הומאופתיה\nHMO: כללית\nDétails: זהב: 75% הנחה, עד 12 טיפולים בשנה\nכסף: 55% הנחה, עד 8 טיפולים...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 26,
-      "text_preview": "Service: טיפול בגמגום\nHMO: מכבי\nDétails: זהב: 80% הנחה, עד 30 טיפולים בשנה\nכסף: 60% הנחה, עד 20 טיפו...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 27,
-      "text_preview": "Service: עדשות מגע\nHMO: מאוחדת\nDétails: זהב: 55% הנחה, כולל בדיקת התאמה חינם\nכסף: 35% הנחה\nארד: 15% ...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 28,
-      "text_preview": "Service: כתרים ושתלים\nHMO: כללית\nDétails: זהב: 50% הנחה, אחריות ל-6 שנים\nכסף: 25% הנחה, אחריות ל-3 ש...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 29,
-      "text_preview": "Service: טיפולים קוסמטיים\nHMO: מכבי\nDétails: זהב: 40% הנחה, כולל הלבנה\nכסף: 25% הנחה\nארד: ללא הנחה\nK...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 30,
-      "text_preview": "Service: טיפול בהפרעות קול\nHMO: מכבי\nDétails: זהב: 75% הנחה, עד 20 טיפולים בשנה\nכסף: 55% הנחה, עד 15...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 31,
-      "text_preview": "Service: הפסקת עישון\nHMO: מאוחדת\nDétails: זהב: חינם, כולל מעקב אישי לשנה\nכסף: 60% הנחה\nארד: 30% הנחה...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 32,
-      "text_preview": "Service: תזונה נכונה\nHMO: מכבי\nDétails: זהב: חינם, כולל 3 פגישות אישיות עם דיאטנית\nכסף: 70% הנחה, פג...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 33,
-      "text_preview": "Service: שיקום שמיעה\nHMO: כללית\nDétails: זהב: 85% הנחה, כולל קבוצות תמיכה\nכסף: 65% הנחה\nארד: 45% הנח...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 34,
-      "text_preview": "Service: דיקור סיני (אקופונקטורה)\nHMO: מאוחדת\nDétails: זהב: 75% הנחה, עד 18 טיפולים בשנה\nכסף: 55% הנ...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 35,
-      "text_preview": "Service: סקירות מערכות\nHMO: מכבי\nDétails: זהב: חינם, כולל סקירה מוקדמת ומאוחרת\nכסף: חינם, סקירה מאוח...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 36,
-      "text_preview": "Service: מעקב הריון\nHMO: כללית\nDétails: זהב: חינם, כולל ייעוץ טלפוני 24/7\nכסף: חינם, רופא קופה\nארד: ...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 37,
-      "text_preview": "Service: כירופרקטיקה\nHMO: מאוחדת\nDétails: זהב: 80% הנחה, עד 16 טיפולים בשנה\nכסף: 60% הנחה, עד 10 טיפ...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 38,
-      "text_preview": "Service: שיקום שמיעה\nHMO: מאוחדת\nDétails: זהב: 75% הנחה, כולל תמיכה טכנית\nכסף: 55% הנחה\nארד: 35% הנח...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 39,
-      "text_preview": "Service: בדיקות ראייה\nHMO: מכבי\nDétails: זהב: חינם פעם בשנה, כולל בדיקת לחץ תוך עיני\nכסף: 50% הנחה ע...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 40,
-      "text_preview": "Service: ניהול מתח\nHMO: מכבי\nDétails: זהב: חינם, כולל 10 מפגשי מדיטציה\nכסף: 65% הנחה, 5 מפגשי מדיטצי...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 41,
-      "text_preview": "Service: אבחון הפרעות שפה ודיבור\nHMO: מכבי\nDétails: זהב: 90% הנחה, כולל דוח מפורט\nכסף: 70% הנחה\nארד:...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 42,
-      "text_preview": "Service: אבחון הפרעות שפה ודיבור\nHMO: מאוחדת\nDétails: זהב: 85% הנחה, כולל ייעוץ להורים\nכסף: 65% הנחה...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 43,
-      "text_preview": "Service: טיפול בילדים\nHMO: מאוחדת\nDétails: זהב: חינם עד גיל 18, כולל אימוני ראייה\nכסף: חינם עד גיל 1...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 44,
-      "text_preview": "Service: טיפול בסיבוכי הריון\nHMO: כללית\nDétails: זהב: 95% כיסוי, כולל התייעצות עם מומחים\nכסף: 75% כי...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 45,
-      "text_preview": "Service: סוכרת\nHMO: מכבי\nDétails: זהב: חינם, כולל מד סוכר רציף לחודש\nכסף: 75% הנחה\nארד: 50% הנחה\nKey...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 46,
-      "text_preview": "Service: טיפולי שורש\nHMO: כללית\nDétails: זהב: 60% הנחה, כולל טיפול לאחר מכן\nכסף: 30% הנחה\nארד: 20% ה...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 47,
-      "text_preview": "Service: טיפול בגמגום\nHMO: מאוחדת\nDétails: זהב: 75% הנחה, עד 25 טיפולים בשנה\nכסף: 55% הנחה, עד 18 טי...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 48,
-      "text_preview": "Service: אביזרי ראייה מיוחדים\nHMO: כללית\nDétails: זהב: 75% הנחה על מכשירי ראייה ירודה, כולל תמיכה טכ...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 49,
+      "index": 1,
       "text_preview": "Service: משקפי ראייה\nHMO: מכבי\nDétails: זהב: 70% הנחה עד 1000 ₪, החלפה כל שנתיים\nכסף: 50% הנחה עד 70...",
       "service_type": "optometry_services",
       "chunk_type": "table",
@@ -470,35 +38,17 @@
       "embedding_dimension": 1536
     },
     {
-      "index": 50,
-      "text_preview": "Service: הומאופתיה\nHMO: מאוחדת\nDétails: זהב: 70% הנחה, עד 10 טיפולים בשנה\nכסף: 50% הנחה, עד 7 טיפולי...",
+      "index": 2,
+      "text_preview": "Service: כירופרקטיקה\nHMO: כללית\nDétails: זהב: 85% הנחה, עד 14 טיפולים בשנה\nכסף: 65% הנחה, עד 9 טיפול...",
       "service_type": "alternative_services",
       "chunk_type": "table",
-      "hmo_name": "מאוחדת",
+      "hmo_name": "כללית",
       "insurance_tier": "זהב",
       "embedding_dimension": 1536
     },
     {
-      "index": 51,
-      "text_preview": "Service: בדיקות ראייה\nHMO: מאוחדת\nDétails: זהב: חינם פעמיים בשנה, כולל מיפוי רשתית\nכסף: חינם פעם בשנ...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 52,
-      "text_preview": "Service: ייעוץ תזונתי\nHMO: מאוחדת\nDétails: זהב: 6 פגישות חינם, כולל ערכת תוספי תזונה\nכסף: 4 פגישות ח...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 53,
-      "text_preview": "Service: תזונה נכונה\nHMO: מאוחדת\nDétails: זהב: חינם, כולל תוכנית תזונה אישית\nכסף: 65% הנחה\nארד: 35% ...",
+      "index": 3,
+      "text_preview": "Service: הפסקת עישון\nHMO: מאוחדת\nDétails: זהב: חינם, כולל מעקב אישי לשנה\nכסף: 60% הנחה\nארד: 30% הנחה...",
       "service_type": "workshops_services",
       "chunk_type": "table",
       "hmo_name": "מאוחדת",
@@ -506,106 +56,7 @@
       "embedding_dimension": 1536
     },
     {
-      "index": 54,
-      "text_preview": "Service: יישור שיניים\nHMO: מכבי\nDétails: זהב: 50% הנחה, כולל רטנציה\nכסף: 30% הנחה\nארד: 5% הנחה\nKeywo...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 55,
-      "text_preview": "Service: טיפול בסיבוכי הריון\nHMO: מאוחדת\nDétails: זהב: 85% כיסוי, כולל ליווי אחות מומחית\nכסף: 65% כי...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 56,
-      "text_preview": "Service: טיפול בעיכוב התפתחותי\nHMO: מאוחדת\nDétails: זהב: 85% הנחה, עד 35 טיפולים בשנה\nכסף: 65% הנחה,...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 57,
-      "text_preview": "Service: נטורופתיה\nHMO: כללית\nDétails: זהב: 80% הנחה, עד 12 טיפולים בשנה\nכסף: 60% הנחה, עד 8 טיפולים...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 58,
-      "text_preview": "Service: סקירות מערכות\nHMO: כללית\nDétails: זהב: חינם, כולל צילום וידאו של הסקירה\nכסף: חינם, סקירה רג...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 59,
-      "text_preview": "Service: הומאופתיה\nHMO: מכבי\nDétails: זהב: 65% הנחה, עד 12 טיפולים בשנה\nכסף: 45% הנחה, עד 8 טיפולים ...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 60,
-      "text_preview": "Service: כתרים ושתלים\nHMO: מאוחדת\nDétails: זהב: 55% הנחה, אחריות ל-7 שנים\nכסף: 30% הנחה, אחריות ל-4 ...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 61,
-      "text_preview": "Service: בדיקות סקר גנטיות\nHMO: כללית\nDétails: זהב: 95% הנחה, כולל פענוח מורחב\nכסף: 75% הנחה\nארד: 55...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 62,
-      "text_preview": "Service: טיפולים לתיקון ראייה\nHMO: מאוחדת\nDétails: זהב: 45% הנחה על ניתוח לייזר, כולל טיפולי המשך\nכס...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 63,
-      "text_preview": "Service: אביזרי ראייה מיוחדים\nHMO: מאוחדת\nDétails: זהב: 65% הנחה על מכשירי ראייה ירודה, כולל הדרכה א...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 64,
-      "text_preview": "Service: בדיקות וניקוי שיניים\nHMO: כללית\nDétails: זהב: חינם כל חודש, קו חירום 24/7\nכסף: חינם פעם בשנ...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 65,
+      "index": 4,
       "text_preview": "Service: טיפול בהפרעות קול\nHMO: כללית\nDétails: זהב: 80% הנחה, עד 22 טיפולים בשנה\nכסף: 60% הנחה, עד 1...",
       "service_type": "communication_clinic_services",
       "chunk_type": "table",
@@ -614,196 +65,25 @@
       "embedding_dimension": 1536
     },
     {
-      "index": 66,
-      "text_preview": "מרפאות תקשורת\nמרפאות תקשורת מתמחות באבחון וטיפול בהפרעות תקשורת, שפה, דיבור ובליעה. הן מספקות שירותי...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "introduction",
-      "hmo_name": null,
-      "insurance_tier": null,
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 67,
-      "text_preview": "Service: עדשות מגע\nHMO: כללית\nDétails: זהב: 65% הנחה, כולל עדשות ניסיון חינם\nכסף: 45% הנחה\nארד: 25% ...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 68,
-      "text_preview": "Informations de contact:\nמכבי: 3555* או 1-700-50-53-53 שלוחה 1\nמאוחדת: 3833* או 1-222-3833 שלוחה 2\nכ...",
-      "service_type": "dentel_services",
-      "chunk_type": "contact",
-      "hmo_name": null,
-      "insurance_tier": null,
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 69,
-      "text_preview": "Service: ייעוץ תזונתי\nHMO: כללית\nDétails: זהב: 4 פגישות חינם, כולל ליווי דיגיטלי\nכסף: 2 פגישות חינם\n...",
+      "index": 5,
+      "text_preview": "Service: בדיקות סקר גנטיות\nHMO: מאוחדת\nDétails: זהב: 85% הנחה, כולל בדיקות מתקדמות\nכסף: 65% הנחה\nארד...",
       "service_type": "pragrency_services",
       "chunk_type": "table",
-      "hmo_name": "כללית",
+      "hmo_name": "מאוחדת",
       "insurance_tier": "זהב",
       "embedding_dimension": 1536
     },
     {
-      "index": 70,
-      "text_preview": "Service: טיפול בילדים\nHMO: כללית\nDétails: זהב: חינם עד גיל 18, כולל בדיקות התפתחות ראייה\nכסף: חינם ע...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 71,
-      "text_preview": "Service: משקפי ראייה\nHMO: כללית\nDétails: זהב: 75% הנחה עד 900 ₪, החלפה כל שנתיים\nכסף: 55% הנחה עד 65...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 72,
-      "text_preview": "Service: דיקור סיני (אקופונקטורה)\nHMO: מכבי\nDétails: זהב: 70% הנחה, עד 20 טיפולים בשנה\nכסף: 50% הנחה...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 73,
-      "text_preview": "Service: רפלקסולוגיה\nHMO: כללית\nDétails: זהב: 70% הנחה, עד 12 טיפולים בשנה\nכסף: 50% הנחה, עד 8 טיפול...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 74,
-      "text_preview": "Service: טיפול בעיכוב התפתחותי\nHMO: מכבי\nDétails: זהב: 90% הנחה, עד 40 טיפולים בשנה\nכסף: 70% הנחה, ע...",
+      "index": 6,
+      "text_preview": "Service: טיפול בגמגום\nHMO: מאוחדת\nDétails: זהב: 75% הנחה, עד 25 טיפולים בשנה\nכסף: 55% הנחה, עד 18 טי...",
       "service_type": "communication_clinic_services",
       "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 75,
-      "text_preview": "Service: בדיקות וניקוי שיניים\nHMO: מכבי\nDétails: זהב: חינם פעמיים בשנה, תור תוך 48 שעות\nכסף: חינם פע...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 76,
-      "text_preview": "Service: ניהול מתח\nHMO: כללית\nDétails: זהב: חינם, כולל אפליקציית מיינדפולנס לשנה\nכסף: 60% הנחה\nארד: ...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 77,
-      "text_preview": "Service: קורס הכנה ללידה\nHMO: מכבי\nDétails: זהב: חינם, כולל סיור בחדר לידה\nכסף: 50% הנחה\nארד: 25% הנ...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 78,
-      "text_preview": "Service: יישור שיניים\nHMO: מאוחדת\nDétails: זהב: 45% הנחה, כולל מכשיר שקוף\nכסף: 25% הנחה\nארד: ללא הנח...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
       "hmo_name": "מאוחדת",
       "insurance_tier": "זהב",
       "embedding_dimension": 1536
     },
     {
-      "index": 79,
-      "text_preview": "Service: בדיקות וניקוי שיניים\nHMO: מאוחדת\nDétails: זהב: חינם כל רבעון, תור ביום\nכסף: חינם פעמיים בשנ...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 80,
-      "text_preview": "Service: פעילות גופנית\nHMO: כללית\nDétails: זהב: חינם, כולל ערכת אימון ביתית\nכסף: 65% הנחה\nארד: 35% ה...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 81,
-      "text_preview": "Informations de contact:\nמכבי: 3555* או 1-700-50-53-53 שלוחה 10\nמאוחדת: 3833* או 1-222-3833 שלוחה 11...",
-      "service_type": "alternative_services",
-      "chunk_type": "contact",
-      "hmo_name": null,
-      "insurance_tier": null,
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 82,
-      "text_preview": "Service: נטורופתיה\nHMO: מאוחדת\nDétails: זהב: 75% הנחה, עד 14 טיפולים בשנה\nכסף: 55% הנחה, עד 9 טיפולי...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 83,
-      "text_preview": "הריון\nתקופת ההריון היא זמן משמעותי בחייה של כל אישה, המלווה בשינויים פיזיים ורגשיים רבים. קופות החול...",
-      "service_type": "pragrency_services",
-      "chunk_type": "introduction",
-      "hmo_name": null,
-      "insurance_tier": null,
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 84,
-      "text_preview": "Service: אבחון הפרעות שפה ודיבור\nHMO: כללית\nDétails: זהב: 95% הנחה, כולל תוכנית טיפול\nכסף: 75% הנחה\n...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 85,
-      "text_preview": "Service: הריון ולידה\nHMO: מאוחדת\nDétails: זהב: חינם, כולל 3 מפגשי ייעוץ הנקה\nכסף: 65% הנחה, מפגש ייע...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 86,
-      "text_preview": "Service: טיפולי שורש\nHMO: מאוחדת\nDétails: זהב: 65% הנחה, טיפול ביום אחד\nכסף: 35% הנחה\nארד: 10% הנחה\n...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 87,
+      "index": 7,
       "text_preview": "Service: טיפול בגמגום\nHMO: כללית\nDétails: זהב: 85% הנחה, עד 28 טיפולים בשנה\nכסף: 65% הנחה, עד 22 טיפ...",
       "service_type": "communication_clinic_services",
       "chunk_type": "table",
@@ -812,25 +92,25 @@
       "embedding_dimension": 1536
     },
     {
-      "index": 88,
-      "text_preview": "Service: ייעוץ תזונתי\nHMO: מכבי\nDétails: זהב: 5 פגישות חינם, כולל תוכנית אישית\nכסף: 3 פגישות חינם\nאר...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 89,
-      "text_preview": "Service: ניהול מתח\nHMO: מאוחדת\nDétails: זהב: חינם, כולל סדנת יוגה שבועית לחודשיים\nכסף: 70% הנחה\nארד:...",
-      "service_type": "workshops_services",
+      "index": 8,
+      "text_preview": "Service: יישור שיניים\nHMO: מאוחדת\nDétails: זהב: 45% הנחה, כולל מכשיר שקוף\nכסף: 25% הנחה\nארד: ללא הנח...",
+      "service_type": "dentel_services",
       "chunk_type": "table",
       "hmo_name": "מאוחדת",
       "insurance_tier": "זהב",
       "embedding_dimension": 1536
     },
     {
-      "index": 90,
+      "index": 9,
+      "text_preview": "Service: טיפול בילדים\nHMO: מאוחדת\nDétails: זהב: חינם עד גיל 18, כולל אימוני ראייה\nכסף: חינם עד גיל 1...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 10,
       "text_preview": "Service: פעילות גופנית\nHMO: מכבי\nDétails: זהב: חינם, כולל מנוי לחודש למכון כושר\nכסף: 60% הנחה\nארד: 3...",
       "service_type": "workshops_services",
       "chunk_type": "table",
@@ -839,34 +119,7 @@
       "embedding_dimension": 1536
     },
     {
-      "index": 91,
-      "text_preview": "Service: כתרים ושתלים\nHMO: מכבי\nDétails: זהב: 60% הנחה, אחריות ל-5 שנים\nכסף: 35% הנחה, אחריות ל-3 שנ...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 92,
-      "text_preview": "מרפאות שיניים\nמרפאות שיניים מציעות מגוון רחב של שירותי בריאות הפה, כולל בדיקות שגרתיות, ניקויים, סתי...",
-      "service_type": "dentel_services",
-      "chunk_type": "introduction",
-      "hmo_name": null,
-      "insurance_tier": null,
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 93,
-      "text_preview": "Service: אביזרי ראייה מיוחדים\nHMO: מכבי\nDétails: זהב: 70% הנחה על מכשירי ראייה ירודה, השאלת ציוד לני...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 94,
+      "index": 11,
       "text_preview": "Service: טיפולים לתיקון ראייה\nHMO: מכבי\nDétails: זהב: 50% הנחה על ניתוח לייזר, כולל בדיקות מקדימות\nכ...",
       "service_type": "optometry_services",
       "chunk_type": "table",
@@ -875,179 +128,62 @@
       "embedding_dimension": 1536
     },
     {
-      "index": 95,
-      "text_preview": "Informations de contact:\nמכבי: 3555* או 1-700-50-53-53 שלוחה 16\nמאוחדת: 3833* או 1-222-3833 שלוחה 17...",
-      "service_type": "pragrency_services",
-      "chunk_type": "contact",
-      "hmo_name": null,
-      "insurance_tier": null,
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 96,
-      "text_preview": "Service: תזונה נכונה\nHMO: כללית\nDétails: זהב: חינם, כולל ליווי דיגיטלי לחצי שנה\nכסף: 75% הנחה\nארד: 4...",
-      "service_type": "workshops_services",
+      "index": 12,
+      "text_preview": "Service: טיפול בילדים\nHMO: כללית\nDétails: זהב: חינם עד גיל 18, כולל בדיקות התפתחות ראייה\nכסף: חינם ע...",
+      "service_type": "optometry_services",
       "chunk_type": "table",
       "hmo_name": "כללית",
       "insurance_tier": "זהב",
       "embedding_dimension": 1536
     },
     {
-      "index": 97,
-      "text_preview": "Service: סתימות\nHMO: מכבי\nDétails: זהב: 80% הנחה, חומרים מתקדמים\nכסף: 50% הנחה\nארד: 20% הנחה\nKeyword...",
-      "service_type": "dentel_services",
+      "index": 13,
+      "text_preview": "Service: עדשות מגע\nHMO: מכבי\nDétails: זהב: 60% הנחה, כולל ערכת טיפול שנתית\nכסף: 40% הנחה\nארד: 20% הנ...",
+      "service_type": "optometry_services",
       "chunk_type": "table",
       "hmo_name": "מכבי",
       "insurance_tier": "זהב",
       "embedding_dimension": 1536
     },
     {
-      "index": 98,
-      "text_preview": "סדנאות בריאות\nסדנאות בריאות הן חלק חשוב מתוכניות קידום הבריאות של קופות החולים. הן מציעות מגוון רחב ...",
+      "index": 14,
+      "text_preview": "Service: ניהול מתח\nHMO: מכבי\nDétails: זהב: חינם, כולל 10 מפגשי מדיטציה\nכסף: 65% הנחה, 5 מפגשי מדיטצי...",
       "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 15,
+      "text_preview": "Service: שיאצו\nHMO: כללית\nDétails: זהב: 75% הנחה, עד 14 טיפולים בשנה\nכסף: 55% הנחה, עד 9 טיפולים בשנ...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 16,
+      "text_preview": "רפואה משלימה (רפואה אלטרנטיבית)\nרפואה משלימה, הידועה גם כרפואה אלטרנטיבית, מתייחסת למגוון שיטות טיפו...",
+      "service_type": "alternative_services",
       "chunk_type": "introduction",
       "hmo_name": null,
       "insurance_tier": null,
       "embedding_dimension": 1536
     },
     {
-      "index": 99,
-      "text_preview": "Service: הפסקת עישון\nHMO: כללית\nDétails: זהב: חינם, כולל תמיכה קבוצתית מתמשכת\nכסף: 70% הנחה\nארד: 40%...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 100,
-      "text_preview": "Service: טיפול בסיבוכי הריון\nHMO: מכבי\nDétails: זהב: 90% כיסוי, כולל אשפוז בית במקרה הצורך\nכסף: 70% ...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 101,
-      "text_preview": "Service: סקירות מערכות\nHMO: מאוחדת\nDétails: זהב: חינם, כולל סקירה תלת-ממדית\nכסף: חינם, סקירה רגילה\nא...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 102,
-      "text_preview": "Service: שיאצו\nHMO: מכבי\nDétails: זהב: 65% הנחה, עד 15 טיפולים בשנה\nכסף: 45% הנחה, עד 10 טיפולים בשנ...",
+      "index": 17,
+      "text_preview": "Service: דיקור סיני (אקופונקטורה)\nHMO: מאוחדת\nDétails: זהב: 75% הנחה, עד 18 טיפולים בשנה\nכסף: 55% הנ...",
       "service_type": "alternative_services",
       "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 103,
-      "text_preview": "Service: מעקב הריון\nHMO: מכבי\nDétails: זהב: חינם, כולל בחירת רופא מומחה\nכסף: חינם, רופא קופה\nארד: חי...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 104,
-      "text_preview": "Service: אבחון וטיפול בהפרעות בליעה\nHMO: כללית\nDétails: זהב: 90% הנחה, כולל טיפול ביתי\nכסף: 70% הנחה...",
-      "service_type": "communication_clinic_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 105,
-      "text_preview": "Service: סתימות\nHMO: כללית\nDétails: זהב: 70% הנחה, טכנולוגיה מתקדמת\nכסף: 40% הנחה\nארד: 20% הנחה\nKeyw...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 106,
-      "text_preview": "Service: הפסקת עישון\nHMO: מכבי\nDétails: זהב: חינם, כולל טיפול תרופתי\nכסף: 50% הנחה, 25% הנחה על טיפו...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 107,
-      "text_preview": "Service: משקפי ראייה\nHMO: מאוחדת\nDétails: זהב: 65% הנחה עד 1200 ₪, החלפה כל שנה וחצי\nכסף: 45% הנחה ע...",
-      "service_type": "optometry_services",
-      "chunk_type": "table",
       "hmo_name": "מאוחדת",
       "insurance_tier": "זהב",
       "embedding_dimension": 1536
     },
     {
-      "index": 108,
-      "text_preview": "Service: יישור שיניים\nHMO: כללית\nDétails: זהב: 40% הנחה, כולל ייעוץ אורתודונטי\nכסף: 20% הנחה\nארד: 20...",
-      "service_type": "dentel_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 109,
-      "text_preview": "אופטומטריה\nאופטומטריה היא תחום העוסק בבריאות העיניים, הראייה ומערכת הראייה. אופטומטריסטים הם אנשי מק...",
-      "service_type": "optometry_services",
-      "chunk_type": "introduction",
-      "hmo_name": null,
-      "insurance_tier": null,
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 110,
-      "text_preview": "Service: דיקור סיני (אקופונקטורה)\nHMO: כללית\nDétails: זהב: 80% הנחה, עד 16 טיפולים בשנה\nכסף: 60% הנח...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 111,
-      "text_preview": "Service: הריון ולידה\nHMO: מכבי\nDétails: זהב: חינם, כולל קורס החייאת תינוקות\nכסף: 70% הנחה\nארד: 40% ה...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 112,
-      "text_preview": "Service: מעקב הריון\nHMO: מאוחדת\nDétails: זהב: חינם, כולל מעקב אישי דיגיטלי\nכסף: חינם, רופא קופה\nארד:...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מאוחדת",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 113,
-      "text_preview": "Service: בדיקות סקר גנטיות\nHMO: מכבי\nDétails: זהב: 90% הנחה, כולל ייעוץ גנטי\nכסף: 70% הנחה\nארד: 50% ...",
-      "service_type": "pragrency_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 114,
-      "text_preview": "Service: טיפול בהפרעות קול\nHMO: מאוחדת\nDétails: זהב: 70% הנחה, עד 18 טיפולים בשנה\nכסף: 50% הנחה, עד ...",
+      "index": 18,
+      "text_preview": "Service: שיקום שמיעה\nHMO: מאוחדת\nDétails: זהב: 75% הנחה, כולל תמיכה טכנית\nכסף: 55% הנחה\nארד: 35% הנח...",
       "service_type": "communication_clinic_services",
       "chunk_type": "table",
       "hmo_name": "מאוחדת",
@@ -1055,8 +191,17 @@
       "embedding_dimension": 1536
     },
     {
-      "index": 115,
-      "text_preview": "Service: שיקום שמיעה\nHMO: מכבי\nDétails: זהב: 80% הנחה, כולל התאמת מכשירי שמיעה\nכסף: 60% הנחה\nארד: 40...",
+      "index": 19,
+      "text_preview": "Service: אבחון וטיפול בהפרעות בליעה\nHMO: מאוחדת\nDétails: זהב: 80% הנחה, כולל ייעוץ תזונתי\nכסף: 60% ה...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 20,
+      "text_preview": "Service: טיפול בעיכוב התפתחותי\nHMO: מכבי\nDétails: זהב: 90% הנחה, עד 40 טיפולים בשנה\nכסף: 70% הנחה, ע...",
       "service_type": "communication_clinic_services",
       "chunk_type": "table",
       "hmo_name": "מכבי",
@@ -1064,25 +209,7 @@
       "embedding_dimension": 1536
     },
     {
-      "index": 116,
-      "text_preview": "Service: סוכרת\nHMO: כללית\nDétails: זהב: חינם, כולל קורס בישול לסוכרתיים\nכסף: 80% הנחה\nארד: 55% הנחה\n...",
-      "service_type": "workshops_services",
-      "chunk_type": "table",
-      "hmo_name": "כללית",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 117,
-      "text_preview": "Service: כירופרקטיקה\nHMO: מכבי\nDétails: זהב: 75% הנחה, עד 18 טיפולים בשנה\nכסף: 55% הנחה, עד 12 טיפול...",
-      "service_type": "alternative_services",
-      "chunk_type": "table",
-      "hmo_name": "מכבי",
-      "insurance_tier": "זהב",
-      "embedding_dimension": 1536
-    },
-    {
-      "index": 118,
+      "index": 21,
       "text_preview": "Informations de contact:\nמכבי: 3555* או 1-700-50-53-53 שלוחה 7\nמאוחדת: 3833* או 1-222-3833 שלוחה 8\nכ...",
       "service_type": "workshops_services",
       "chunk_type": "contact",
@@ -1091,12 +218,885 @@
       "embedding_dimension": 1536
     },
     {
-      "index": 119,
+      "index": 22,
+      "text_preview": "Service: טיפול בסיבוכי הריון\nHMO: מכבי\nDétails: זהב: 90% כיסוי, כולל אשפוז בית במקרה הצורך\nכסף: 70% ...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 23,
+      "text_preview": "Service: הפסקת עישון\nHMO: כללית\nDétails: זהב: חינם, כולל תמיכה קבוצתית מתמשכת\nכסף: 70% הנחה\nארד: 40%...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 24,
+      "text_preview": "Service: פעילות גופנית\nHMO: מאוחדת\nDétails: זהב: חינם, כולל 5 אימונים אישיים\nכסף: 55% הנחה, 2 אימוני...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 25,
+      "text_preview": "Service: אביזרי ראייה מיוחדים\nHMO: מכבי\nDétails: זהב: 70% הנחה על מכשירי ראייה ירודה, השאלת ציוד לני...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 26,
+      "text_preview": "Service: כתרים ושתלים\nHMO: מאוחדת\nDétails: זהב: 55% הנחה, אחריות ל-7 שנים\nכסף: 30% הנחה, אחריות ל-4 ...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 27,
+      "text_preview": "Service: עדשות מגע\nHMO: כללית\nDétails: זהב: 65% הנחה, כולל עדשות ניסיון חינם\nכסף: 45% הנחה\nארד: 25% ...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 28,
+      "text_preview": "Service: טיפול בהפרעות קול\nHMO: מכבי\nDétails: זהב: 75% הנחה, עד 20 טיפולים בשנה\nכסף: 55% הנחה, עד 15...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 29,
+      "text_preview": "Service: תזונה נכונה\nHMO: מכבי\nDétails: זהב: חינם, כולל 3 פגישות אישיות עם דיאטנית\nכסף: 70% הנחה, פג...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 30,
+      "text_preview": "Service: סוכרת\nHMO: כללית\nDétails: זהב: חינם, כולל קורס בישול לסוכרתיים\nכסף: 80% הנחה\nארד: 55% הנחה\n...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 31,
+      "text_preview": "Service: דיקור סיני (אקופונקטורה)\nHMO: מכבי\nDétails: זהב: 70% הנחה, עד 20 טיפולים בשנה\nכסף: 50% הנחה...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 32,
+      "text_preview": "Service: כירופרקטיקה\nHMO: מאוחדת\nDétails: זהב: 80% הנחה, עד 16 טיפולים בשנה\nכסף: 60% הנחה, עד 10 טיפ...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 33,
+      "text_preview": "Service: טיפול בסיבוכי הריון\nHMO: כללית\nDétails: זהב: 95% כיסוי, כולל התייעצות עם מומחים\nכסף: 75% כי...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 34,
+      "text_preview": "Service: סקירות מערכות\nHMO: כללית\nDétails: זהב: חינם, כולל צילום וידאו של הסקירה\nכסף: חינם, סקירה רג...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 35,
+      "text_preview": "Service: רפלקסולוגיה\nHMO: מכבי\nDétails: זהב: 60% הנחה, עד 12 טיפולים בשנה\nכסף: 40% הנחה, עד 8 טיפולי...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 36,
+      "text_preview": "Service: ניהול מתח\nHMO: כללית\nDétails: זהב: חינם, כולל אפליקציית מיינדפולנס לשנה\nכסף: 60% הנחה\nארד: ...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 37,
+      "text_preview": "Service: סקירות מערכות\nHMO: מכבי\nDétails: זהב: חינם, כולל סקירה מוקדמת ומאוחרת\nכסף: חינם, סקירה מאוח...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 38,
+      "text_preview": "Service: הומאופתיה\nHMO: מכבי\nDétails: זהב: 65% הנחה, עד 12 טיפולים בשנה\nכסף: 45% הנחה, עד 8 טיפולים ...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 39,
+      "text_preview": "Service: ניהול מתח\nHMO: מאוחדת\nDétails: זהב: חינם, כולל סדנת יוגה שבועית לחודשיים\nכסף: 70% הנחה\nארד:...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 40,
+      "text_preview": "Service: הריון ולידה\nHMO: כללית\nDétails: זהב: חינם, כולל סדנת עיסוי תינוקות\nכסף: 75% הנחה\nארד: 45% ה...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 41,
+      "text_preview": "Service: פעילות גופנית\nHMO: כללית\nDétails: זהב: חינם, כולל ערכת אימון ביתית\nכסף: 65% הנחה\nארד: 35% ה...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 42,
+      "text_preview": "סדנאות בריאות\nסדנאות בריאות הן חלק חשוב מתוכניות קידום הבריאות של קופות החולים. הן מציעות מגוון רחב ...",
+      "service_type": "workshops_services",
+      "chunk_type": "introduction",
+      "hmo_name": null,
+      "insurance_tier": null,
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 43,
+      "text_preview": "Service: בדיקות וניקוי שיניים\nHMO: מאוחדת\nDétails: זהב: חינם כל רבעון, תור ביום\nכסף: חינם פעמיים בשנ...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 44,
+      "text_preview": "Service: אביזרי ראייה מיוחדים\nHMO: כללית\nDétails: זהב: 75% הנחה על מכשירי ראייה ירודה, כולל תמיכה טכ...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 45,
+      "text_preview": "Service: יישור שיניים\nHMO: כללית\nDétails: זהב: 40% הנחה, כולל ייעוץ אורתודונטי\nכסף: 20% הנחה\nארד: 20...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 46,
+      "text_preview": "Service: טיפול בעיכוב התפתחותי\nHMO: כללית\nDétails: זהב: 95% הנחה, עד 45 טיפולים בשנה\nכסף: 75% הנחה, ...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 47,
+      "text_preview": "מרפאות שיניים\nמרפאות שיניים מציעות מגוון רחב של שירותי בריאות הפה, כולל בדיקות שגרתיות, ניקויים, סתי...",
+      "service_type": "dentel_services",
+      "chunk_type": "introduction",
+      "hmo_name": null,
+      "insurance_tier": null,
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 48,
+      "text_preview": "Service: קורס הכנה ללידה\nHMO: מכבי\nDétails: זהב: חינם, כולל סיור בחדר לידה\nכסף: 50% הנחה\nארד: 25% הנ...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 49,
+      "text_preview": "מרפאות תקשורת\nמרפאות תקשורת מתמחות באבחון וטיפול בהפרעות תקשורת, שפה, דיבור ובליעה. הן מספקות שירותי...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "introduction",
+      "hmo_name": null,
+      "insurance_tier": null,
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 50,
+      "text_preview": "Service: ייעוץ תזונתי\nHMO: כללית\nDétails: זהב: 4 פגישות חינם, כולל ליווי דיגיטלי\nכסף: 2 פגישות חינם\n...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 51,
+      "text_preview": "Service: סוכרת\nHMO: מאוחדת\nDétails: זהב: חינם, כולל ליווי אישי של אחות סוכרת\nכסף: 70% הנחה\nארד: 45% ...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 52,
+      "text_preview": "Service: מעקב הריון\nHMO: כללית\nDétails: זהב: חינם, כולל ייעוץ טלפוני 24/7\nכסף: חינם, רופא קופה\nארד: ...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 53,
+      "text_preview": "Service: נטורופתיה\nHMO: כללית\nDétails: זהב: 80% הנחה, עד 12 טיפולים בשנה\nכסף: 60% הנחה, עד 8 טיפולים...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 54,
+      "text_preview": "Service: כתרים ושתלים\nHMO: כללית\nDétails: זהב: 50% הנחה, אחריות ל-6 שנים\nכסף: 25% הנחה, אחריות ל-3 ש...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 55,
+      "text_preview": "Service: טיפולים קוסמטיים\nHMO: כללית\nDétails: זהב: 30% הנחה, כולל שיחזור חרסינה\nכסף: 15% הנחה\nארד: 2...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 56,
+      "text_preview": "Service: אביזרי ראייה מיוחדים\nHMO: מאוחדת\nDétails: זהב: 65% הנחה על מכשירי ראייה ירודה, כולל הדרכה א...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 57,
+      "text_preview": "Service: טיפולים קוסמטיים\nHMO: מאוחדת\nDétails: זהב: 35% הנחה, כולל ציפויים\nכסף: 20% הנחה\nארד: ללא הנ...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 58,
+      "text_preview": "Service: משקפי ראייה\nHMO: כללית\nDétails: זהב: 75% הנחה עד 900 ₪, החלפה כל שנתיים\nכסף: 55% הנחה עד 65...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 59,
+      "text_preview": "Service: שיקום שמיעה\nHMO: כללית\nDétails: זהב: 85% הנחה, כולל קבוצות תמיכה\nכסף: 65% הנחה\nארד: 45% הנח...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 60,
+      "text_preview": "אופטומטריה\nאופטומטריה היא תחום העוסק בבריאות העיניים, הראייה ומערכת הראייה. אופטומטריסטים הם אנשי מק...",
+      "service_type": "optometry_services",
+      "chunk_type": "introduction",
+      "hmo_name": null,
+      "insurance_tier": null,
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 61,
+      "text_preview": "Service: טיפולים קוסמטיים\nHMO: מכבי\nDétails: זהב: 40% הנחה, כולל הלבנה\nכסף: 25% הנחה\nארד: ללא הנחה\nK...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 62,
+      "text_preview": "Service: טיפול בילדים\nHMO: מכבי\nDétails: זהב: חינם עד גיל 18, כולל טיפולי עין עצלה\nכסף: חינם עד גיל ...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 63,
+      "text_preview": "Service: טיפולי שורש\nHMO: כללית\nDétails: זהב: 60% הנחה, כולל טיפול לאחר מכן\nכסף: 30% הנחה\nארד: 20% ה...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 64,
+      "text_preview": "Service: עדשות מגע\nHMO: מאוחדת\nDétails: זהב: 55% הנחה, כולל בדיקת התאמה חינם\nכסף: 35% הנחה\nארד: 15% ...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 65,
+      "text_preview": "Service: בדיקות סקר גנטיות\nHMO: מכבי\nDétails: זהב: 90% הנחה, כולל ייעוץ גנטי\nכסף: 70% הנחה\nארד: 50% ...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 66,
+      "text_preview": "Service: בדיקות וניקוי שיניים\nHMO: מכבי\nDétails: זהב: חינם פעמיים בשנה, תור תוך 48 שעות\nכסף: חינם פע...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 67,
+      "text_preview": "Service: סוכרת\nHMO: מכבי\nDétails: זהב: חינם, כולל מד סוכר רציף לחודש\nכסף: 75% הנחה\nארד: 50% הנחה\nKey...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 68,
+      "text_preview": "Service: משקפי ראייה\nHMO: מאוחדת\nDétails: זהב: 65% הנחה עד 1200 ₪, החלפה כל שנה וחצי\nכסף: 45% הנחה ע...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 69,
+      "text_preview": "Service: סתימות\nHMO: מאוחדת\nDétails: זהב: 75% הנחה, חומרים פרימיום\nכסף: 45% הנחה\nארד: 15% הנחה\nKeywo...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 70,
+      "text_preview": "Service: טיפול בגמגום\nHMO: מכבי\nDétails: זהב: 80% הנחה, עד 30 טיפולים בשנה\nכסף: 60% הנחה, עד 20 טיפו...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 71,
+      "text_preview": "Service: אבחון וטיפול בהפרעות בליעה\nHMO: מכבי\nDétails: זהב: 85% הנחה, כולל בדיקת וידאופלורוסקופיה\nכס...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 72,
+      "text_preview": "Service: טיפולי שורש\nHMO: מאוחדת\nDétails: זהב: 65% הנחה, טיפול ביום אחד\nכסף: 35% הנחה\nארד: 10% הנחה\n...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 73,
+      "text_preview": "Service: אבחון הפרעות שפה ודיבור\nHMO: כללית\nDétails: זהב: 95% הנחה, כולל תוכנית טיפול\nכסף: 75% הנחה\n...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 74,
+      "text_preview": "Informations de contact:\nמכבי: 3555* או 1-700-50-53-53 שלוחה 1\nמאוחדת: 3833* או 1-222-3833 שלוחה 2\nכ...",
+      "service_type": "dentel_services",
+      "chunk_type": "contact",
+      "hmo_name": null,
+      "insurance_tier": null,
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 75,
+      "text_preview": "Service: תזונה נכונה\nHMO: כללית\nDétails: זהב: חינם, כולל ליווי דיגיטלי לחצי שנה\nכסף: 75% הנחה\nארד: 4...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 76,
+      "text_preview": "Service: מעקב הריון\nHMO: מאוחדת\nDétails: זהב: חינם, כולל מעקב אישי דיגיטלי\nכסף: חינם, רופא קופה\nארד:...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 77,
+      "text_preview": "Service: בדיקות וניקוי שיניים\nHMO: כללית\nDétails: זהב: חינם כל חודש, קו חירום 24/7\nכסף: חינם פעם בשנ...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 78,
+      "text_preview": "Service: ייעוץ תזונתי\nHMO: מכבי\nDétails: זהב: 5 פגישות חינם, כולל תוכנית אישית\nכסף: 3 פגישות חינם\nאר...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 79,
+      "text_preview": "Service: הומאופתיה\nHMO: מאוחדת\nDétails: זהב: 70% הנחה, עד 10 טיפולים בשנה\nכסף: 50% הנחה, עד 7 טיפולי...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 80,
+      "text_preview": "Service: דיקור סיני (אקופונקטורה)\nHMO: כללית\nDétails: זהב: 80% הנחה, עד 16 טיפולים בשנה\nכסף: 60% הנח...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 81,
+      "text_preview": "Service: רפלקסולוגיה\nHMO: מאוחדת\nDétails: זהב: 65% הנחה, עד 10 טיפולים בשנה\nכסף: 45% הנחה, עד 7 טיפו...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 82,
+      "text_preview": "Service: בדיקות ראייה\nHMO: כללית\nDétails: זהב: חינם כל חצי שנה, כולל בדיקת שדה ראייה\nכסף: חינם פעם ב...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 83,
+      "text_preview": "Service: אבחון הפרעות שפה ודיבור\nHMO: מכבי\nDétails: זהב: 90% הנחה, כולל דוח מפורט\nכסף: 70% הנחה\nארד:...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 84,
+      "text_preview": "Service: בדיקות ראייה\nHMO: מאוחדת\nDétails: זהב: חינם פעמיים בשנה, כולל מיפוי רשתית\nכסף: חינם פעם בשנ...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 85,
+      "text_preview": "Service: מעקב הריון\nHMO: מכבי\nDétails: זהב: חינם, כולל בחירת רופא מומחה\nכסף: חינם, רופא קופה\nארד: חי...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 86,
+      "text_preview": "Service: נטורופתיה\nHMO: מכבי\nDétails: זהב: 70% הנחה, עד 16 טיפולים בשנה\nכסף: 50% הנחה, עד 10 טיפולים...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 87,
+      "text_preview": "Service: שיקום שמיעה\nHMO: מכבי\nDétails: זהב: 80% הנחה, כולל התאמת מכשירי שמיעה\nכסף: 60% הנחה\nארד: 40...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 88,
+      "text_preview": "Service: שיאצו\nHMO: מאוחדת\nDétails: זהב: 70% הנחה, עד 12 טיפולים בשנה\nכסף: 50% הנחה, עד 8 טיפולים בש...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 89,
+      "text_preview": "Service: טיפול בהפרעות קול\nHMO: מאוחדת\nDétails: זהב: 70% הנחה, עד 18 טיפולים בשנה\nכסף: 50% הנחה, עד ...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 90,
+      "text_preview": "Service: כתרים ושתלים\nHMO: מכבי\nDétails: זהב: 60% הנחה, אחריות ל-5 שנים\nכסף: 35% הנחה, אחריות ל-3 שנ...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 91,
+      "text_preview": "Service: כירופרקטיקה\nHMO: מכבי\nDétails: זהב: 75% הנחה, עד 18 טיפולים בשנה\nכסף: 55% הנחה, עד 12 טיפול...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 92,
+      "text_preview": "Service: טיפולי שורש\nHMO: מכבי\nDétails: זהב: 70% הנחה, כולל צילומי רנטגן\nכסף: 40% הנחה\nארד: 15% הנחה...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 93,
+      "text_preview": "Service: סתימות\nHMO: כללית\nDétails: זהב: 70% הנחה, טכנולוגיה מתקדמת\nכסף: 40% הנחה\nארד: 20% הנחה\nKeyw...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 94,
+      "text_preview": "Service: קורס הכנה ללידה\nHMO: מאוחדת\nDétails: זהב: חינם, כולל קורס החייאת תינוקות\nכסף: 60% הנחה\nארד:...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 95,
+      "text_preview": "Service: נטורופתיה\nHMO: מאוחדת\nDétails: זהב: 75% הנחה, עד 14 טיפולים בשנה\nכסף: 55% הנחה, עד 9 טיפולי...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 96,
+      "text_preview": "Service: בדיקות ראייה\nHMO: מכבי\nDétails: זהב: חינם פעם בשנה, כולל בדיקת לחץ תוך עיני\nכסף: 50% הנחה ע...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 97,
+      "text_preview": "Service: תזונה נכונה\nHMO: מאוחדת\nDétails: זהב: חינם, כולל תוכנית תזונה אישית\nכסף: 65% הנחה\nארד: 35% ...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 98,
+      "text_preview": "Service: סקירות מערכות\nHMO: מאוחדת\nDétails: זהב: חינם, כולל סקירה תלת-ממדית\nכסף: חינם, סקירה רגילה\nא...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 99,
+      "text_preview": "Service: יישור שיניים\nHMO: מכבי\nDétails: זהב: 50% הנחה, כולל רטנציה\nכסף: 30% הנחה\nארד: 5% הנחה\nKeywo...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 100,
+      "text_preview": "Service: שיאצו\nHMO: מכבי\nDétails: זהב: 65% הנחה, עד 15 טיפולים בשנה\nכסף: 45% הנחה, עד 10 טיפולים בשנ...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 101,
+      "text_preview": "Service: ייעוץ תזונתי\nHMO: מאוחדת\nDétails: זהב: 6 פגישות חינם, כולל ערכת תוספי תזונה\nכסף: 4 פגישות ח...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 102,
+      "text_preview": "Service: טיפול בעיכוב התפתחותי\nHMO: מאוחדת\nDétails: זהב: 85% הנחה, עד 35 טיפולים בשנה\nכסף: 65% הנחה,...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 103,
+      "text_preview": "Informations de contact:\nמכבי: 3555* או 1-700-50-53-53 שלוחה 16\nמאוחדת: 3833* או 1-222-3833 שלוחה 17...",
+      "service_type": "pragrency_services",
+      "chunk_type": "contact",
+      "hmo_name": null,
+      "insurance_tier": null,
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 104,
+      "text_preview": "Service: סתימות\nHMO: מכבי\nDétails: זהב: 80% הנחה, חומרים מתקדמים\nכסף: 50% הנחה\nארד: 20% הנחה\nKeyword...",
+      "service_type": "dentel_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 105,
+      "text_preview": "Informations de contact:\nמכבי: 3555* או 1-700-50-53-53 שלוחה 10\nמאוחדת: 3833* או 1-222-3833 שלוחה 11...",
+      "service_type": "alternative_services",
+      "chunk_type": "contact",
+      "hmo_name": null,
+      "insurance_tier": null,
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 106,
+      "text_preview": "Service: טיפולים לתיקון ראייה\nHMO: מאוחדת\nDétails: זהב: 45% הנחה על ניתוח לייזר, כולל טיפולי המשך\nכס...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 107,
+      "text_preview": "Service: טיפולים לתיקון ראייה\nHMO: כללית\nDétails: זהב: 55% הנחה על ניתוח לייזר, כולל אחריות ל-5 שנים...",
+      "service_type": "optometry_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 108,
+      "text_preview": "Service: הומאופתיה\nHMO: כללית\nDétails: זהב: 75% הנחה, עד 12 טיפולים בשנה\nכסף: 55% הנחה, עד 8 טיפולים...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 109,
+      "text_preview": "Service: בדיקות סקר גנטיות\nHMO: כללית\nDétails: זהב: 95% הנחה, כולל פענוח מורחב\nכסף: 75% הנחה\nארד: 55...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 110,
+      "text_preview": "Service: הריון ולידה\nHMO: מאוחדת\nDétails: זהב: חינם, כולל 3 מפגשי ייעוץ הנקה\nכסף: 65% הנחה, מפגש ייע...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 111,
+      "text_preview": "Service: אבחון הפרעות שפה ודיבור\nHMO: מאוחדת\nDétails: זהב: 85% הנחה, כולל ייעוץ להורים\nכסף: 65% הנחה...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 112,
+      "text_preview": "Service: טיפול בסיבוכי הריון\nHMO: מאוחדת\nDétails: זהב: 85% כיסוי, כולל ליווי אחות מומחית\nכסף: 65% כי...",
+      "service_type": "pragrency_services",
+      "chunk_type": "table",
+      "hmo_name": "מאוחדת",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 113,
+      "text_preview": "Service: הריון ולידה\nHMO: מכבי\nDétails: זהב: חינם, כולל קורס החייאת תינוקות\nכסף: 70% הנחה\nארד: 40% ה...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 114,
+      "text_preview": "Informations de contact:\nמכבי: 3555* או 1-700-50-53-53 שלוחה 13\nמאוחדת: 3833* או 1-222-3833 שלוחה 14...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "contact",
+      "hmo_name": null,
+      "insurance_tier": null,
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 115,
+      "text_preview": "הריון\nתקופת ההריון היא זמן משמעותי בחייה של כל אישה, המלווה בשינויים פיזיים ורגשיים רבים. קופות החול...",
+      "service_type": "pragrency_services",
+      "chunk_type": "introduction",
+      "hmo_name": null,
+      "insurance_tier": null,
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 116,
+      "text_preview": "Service: רפלקסולוגיה\nHMO: כללית\nDétails: זהב: 70% הנחה, עד 12 טיפולים בשנה\nכסף: 50% הנחה, עד 8 טיפול...",
+      "service_type": "alternative_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 117,
       "text_preview": "Informations de contact:\nמכבי: 3555* או 1-700-50-53-53 שלוחה 4\nמאוחדת: 3833* או 1-222-3833 שלוחה 5\nכ...",
       "service_type": "optometry_services",
       "chunk_type": "contact",
       "hmo_name": null,
       "insurance_tier": null,
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 118,
+      "text_preview": "Service: הפסקת עישון\nHMO: מכבי\nDétails: זהב: חינם, כולל טיפול תרופתי\nכסף: 50% הנחה, 25% הנחה על טיפו...",
+      "service_type": "workshops_services",
+      "chunk_type": "table",
+      "hmo_name": "מכבי",
+      "insurance_tier": "זהב",
+      "embedding_dimension": 1536
+    },
+    {
+      "index": 119,
+      "text_preview": "Service: אבחון וטיפול בהפרעות בליעה\nHMO: כללית\nDétails: זהב: 90% הנחה, כולל טיפול ביתי\nכסף: 70% הנחה...",
+      "service_type": "communication_clinic_services",
+      "chunk_type": "table",
+      "hmo_name": "כללית",
+      "insurance_tier": "זהב",
       "embedding_dimension": 1536
     }
   ]

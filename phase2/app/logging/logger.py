@@ -5,35 +5,35 @@ from datetime import datetime
 from loguru import logger
 from ..core.config import settings
 
-# Configuration du niveau de log
+# Log level configuration
 LOG_LEVEL = settings.LOG_LEVEL
 
-# Répertoire des logs
+# Logs directory
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "logs")
 api_log_dir = os.path.join(log_dir, "api")
 ui_log_dir = os.path.join(log_dir, "ui")
 
-# Créer les répertoires s'ils n'existent pas
+# Create directories if they don't exist
 os.makedirs(log_dir, exist_ok=True)
 os.makedirs(api_log_dir, exist_ok=True)
 os.makedirs(ui_log_dir, exist_ok=True)
 
-# Fichiers de log avec timestamp pour éviter les écrasements
+# Log files with timestamp to avoid overwriting
 api_log_file = os.path.join(api_log_dir, f"api_{timestamp}.log")
 ui_log_file = os.path.join(ui_log_dir, f"ui_{timestamp}.log")
 debug_log_file = os.path.join(log_dir, f"debug_{timestamp}.log")
 
-# Format personnalisé pour les logs
+# Custom format for logs
 log_format = "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} - {message}"
 
-# Configurer loguru
-logger.remove()  # Supprimer la configuration par défaut
+# Configure loguru
+logger.remove()  # Remove default configuration
 
-# Ajouter la sortie console avec niveau INFO
+# Add console output with INFO level
 logger.add(sys.stderr, level="INFO", format=log_format)
 
-# Ajouter le fichier de log API
+# Add API log file
 logger.add(
     api_log_file,
     rotation="100 MB",
@@ -45,7 +45,7 @@ logger.add(
     encoding="utf8"
 )
 
-# Ajouter le fichier de log UI
+# Add UI log file
 logger.add(
     ui_log_file,
     rotation="100 MB",
@@ -57,7 +57,7 @@ logger.add(
     encoding="utf8"
 )
 
-# Ajouter le fichier de log debug pour TOUS les messages
+# Add debug log file for ALL messages
 logger.add(
     debug_log_file,
     rotation="100 MB",
@@ -68,40 +68,40 @@ logger.add(
     encoding="utf8"
 )
 
-# Fonction pour logger les requêtes API
+# Function to log API requests
 def log_api_request(endpoint: str, request_data: dict, user_id: str = "unknown"):
     """
-    Enregistre les données d'une requête API.
+    Records API request data.
     
     Args:
-        endpoint: Le point de terminaison API appelé
-        request_data: Les données de la requête (sans informations sensibles)
-        user_id: Un identifiant d'utilisateur ou de session (anonyme)
+        endpoint: The API endpoint called
+        request_data: The data of the request (without sensitive information)
+        user_id: A user identifier or session identifier (anonymous)
     """
     try:
-        # Créer une copie des données pour ne pas modifier l'original
+        # Create a copy of the data to not modify the original
         safe_data = request_data.copy() if request_data else {}
         
-        # Masquer ou retirer les informations sensibles
+        # Mask or remove sensitive information
         if isinstance(safe_data, dict):
-            # Si des conversation_history est présent, ne logger que le nombre de messages
+            # If conversation_history is present, log only the number of messages
             if 'conversation_history' in safe_data and isinstance(safe_data['conversation_history'], dict):
                 messages = safe_data['conversation_history'].get('messages', [])
                 safe_data['conversation_history'] = f"[{len(messages)} messages]"
             
-            # Masquer les informations utilisateur sensibles
+            # Mask sensitive user information
             for profile_key in ['user_profile', 'partial_profile']:
                 if profile_key in safe_data and isinstance(safe_data[profile_key], dict):
                     profile = safe_data[profile_key]
                     
-                    # Masquer les identifiants sensibles
+                    # Mask sensitive identifiers
                     for sensitive_field in ['id_number', 'hmo_card_number']:
                         if sensitive_field in profile:
                             value = profile[sensitive_field]
                             if value and len(str(value)) > 4:
                                 profile[sensitive_field] = f"***{str(value)[-4:]}"
         
-        # Enregistrer les données de requête sécurisées
+        # Record safe request data
         log_entry = {
             "type": "api_request",
             "timestamp": datetime.now().isoformat(),
@@ -116,40 +116,40 @@ def log_api_request(endpoint: str, request_data: dict, user_id: str = "unknown")
     except Exception as e:
         logger.error(f"Erreur lors de l'enregistrement de la requête API: {str(e)}")
 
-# Fonction pour logger les réponses API
+# Function to log API responses
 def log_api_response(endpoint: str, status_code: int, response_data: dict, 
                     processing_time: float, user_id: str = "unknown"):
     """
-    Enregistre les données d'une réponse API.
+    Records API response data.
     
     Args:
-        endpoint: Le point de terminaison API appelé
-        status_code: Le code de statut HTTP
-        response_data: Les données de la réponse (sans informations sensibles)
-        processing_time: Le temps de traitement en millisecondes
-        user_id: Un identifiant d'utilisateur ou de session (anonyme)
+        endpoint: The API endpoint called
+        status_code: The HTTP status code
+        response_data: The data of the response (without sensitive information)
+        processing_time: The processing time in milliseconds
+        user_id: A user identifier or session identifier (anonymous)
     """
     try:
-        # Masquer ou simplifier les données de réponse sensibles
+        # Mask or simplify sensitive response data
         safe_data = {}
         
         if response_data:
-            # Copier les métadonnées et statuts si présents
+            # Copy metadata and status if present
             if 'metadata' in response_data:
                 safe_data['metadata'] = response_data['metadata']
             
-            # Ne pas inclure le contenu complet des réponses
+            # Do not include full response content
             if 'response' in response_data:
                 content = response_data['response']
                 safe_data['response_length'] = len(content) if isinstance(content, str) else "non-string"
             
-            # Si un historique de conversation est présent, ne logger que le nombre de messages
+            # If conversation history is present, log only the number of messages
             if 'updated_conversation_history' in response_data:
                 history = response_data['updated_conversation_history']
                 if isinstance(history, dict) and 'messages' in history:
                     safe_data['conversation_messages_count'] = len(history['messages'])
         
-        # Métadonnées de la réponse
+        # Response metadata
         log_entry = {
             "type": "api_response",
             "timestamp": datetime.now().isoformat(),
@@ -163,7 +163,7 @@ def log_api_response(endpoint: str, status_code: int, response_data: dict,
         logger.info(f"API Response | Endpoint: {endpoint} | User: {user_id} | Status: {status_code} | Time: {processing_time:.2f}ms")
         logger.debug(f"API Response Details: {json.dumps(log_entry, ensure_ascii=False)}")
         
-        # Enregistrer séparément les erreurs
+        # Record separate errors
         if status_code >= 400:
             logger.error(f"API Error | Endpoint: {endpoint} | Status: {status_code} | User: {user_id}")
             logger.error(f"Error Details: {json.dumps(safe_data, ensure_ascii=False)}")
@@ -171,5 +171,5 @@ def log_api_response(endpoint: str, status_code: int, response_data: dict,
     except Exception as e:
         logger.error(f"Erreur lors de l'enregistrement de la réponse API: {str(e)}")
 
-# Exporter les fonctions et objets
+# Export functions and objects
 __all__ = ["logger", "log_api_request", "log_api_response"]
